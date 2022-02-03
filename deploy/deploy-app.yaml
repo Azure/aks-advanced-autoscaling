@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-processor
+  labels:
+    app: order-processor
+spec:
+  selector:
+    matchLabels:
+      app: order-processor
+  template:
+    metadata:
+      labels:
+        app: order-processor
+    spec:
+      containers:
+      - name: order-processor
+        image: ghcr.io/kedacore/sample-dotnet-worker-servicebus-queue:latest
+        env:
+        - name: KEDA_SERVICEBUS_AUTH_MODE
+          value: ConnectionString
+        - name: KEDA_SERVICEBUS_QUEUE_CONNECTIONSTRING
+          valueFrom:
+            secretKeyRef:
+             name: order-consumer-secret
+             key: queue-connection-string
+        - name: KEDA_SERVICEBUS_QUEUE_NAME
+          value: orders
+      nodeSelector:
+        kubernetes.io/role: agent
+        beta.kubernetes.io/os: linux
+        type: virtual-kubelet
+      tolerations:
+      - key: virtual-kubelet.io/provider
+        operator: Exists
+      - key: azure.com/aci
+        effect: NoSchedule
