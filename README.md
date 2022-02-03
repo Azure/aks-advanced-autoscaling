@@ -1,33 +1,148 @@
-# Project
+# Instructions
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+## Pre-requisites
 
-As the maintainer of this project, please make a few updates:
+- Azure CLI
+- Azure Subscription
+- .NET Core 3.0
+- powershell
+- helm
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+## Setup
 
-## Contributing
+### Creating AKS clsuter with virtual node add on
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+* Execute the following
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+```cli
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+project_name=vn-take4
+location=eastus
+aks group create -n $project_name -l $location
+az configure --defaults location=$location group=$project_name
 
-## Trademarks
+acr_name=$project_name
+az acr create --name $acr_name --sku Basic
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+vnet_name=$project_name
+aci_subnet_name=aciSubnet
+az network vnet create \
+    --name $vnet_name \
+    --address-prefixes 10.0.0.0/8 \
+    --subnet-name $aci_subnet_name \
+    --subnet-prefix 10.240.0.0/16
+
+virtual_subnet_name=virtualSubnet
+az network vnet subnet create \
+    --vnet-name $vnet_name \
+    --name $virtual_subnet_name \
+    --address-prefixes 10.241.0.0/16
+
+aci_subnet_id=$(az network vnet subnet show --vnet-name $vnet_name --name $aci_subnet_name --query id -o tsv)
+
+virtual_subnet_id=$(az network vnet subnet show --vnet-name $vnet_name --name $virtual_subnet_name --query id -o tsv)
+
+aks_cluster_name=$project_name
+az aks create \
+          --name $aks_cluster_name \
+          --node-count 1 \
+          --attach-acr $acr_name \
+          --network-plugin azure \
+          --aci-subnet-name $virtual_subnet_name \
+          --vnet-subnet-id $aci_subnet_id \
+          --enable-addons virtual-node \
+          --generate-ssh-keys
+az aks install-cli
+
+```
+
+### Install KEDA
+
+* Execute the following
+
+```cli
+
+helm repo update
+helm repo add kedacore https://kedacore.github.io/charts
+kubectl create namespace keda
+helm install keda kedacore/keda --namespace keda
+
+```
+
+### Creating a new Azure Service Bus namespace & queue
+
+* Execute the following
+
+```cli
+
+servicebus_namespace=$project_name
+az servicebus namespace create --name $servicebus_namespace --sku basic
+
+keda_connection_string=$(az servicebus namespace authorization-rule keys list  --namespace-name $servicebus_namespace --name RootManageSharedAccessKey --query primaryConnectionString -o tsv)
+
+queue_name=orders
+az servicebus queue create --namespace-name $servicebus_namespace --name $queue_name
+
+authorization_rule_name=order-consumer
+az servicebus queue authorization-rule create --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --rights Listen
+
+queue_connection_string=$(az servicebus queue authorization-rule keys list --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --query primaryConnectionString -o tsv)
+
+demo_app_namespace=keda-dotnet-sample
+kubectl create namespace $demo_app_namespace
+
+keda_servicebus_secret=keda-servicebus-secret
+kubectl create secret generic $keda_servicebus_secret --from-literal=keda-connection-string=$keda_connection_string -n $demo_app_namespace
+
+kubectl create secret generic order-consumer-secret --from-literal=queue-connection-string=$queue_connection_string -n $demo_app_namespace
+
+```
+
+### Deploying demo app
+
+* Execute the following
+
+```cli
+
+kubectl apply -f deploy/deploy-app.yaml --namespace $demo_app_namespace
+
+kubectl get pod -n $demo_app_namespace -o wide
+
+kubectl apply -f deploy/deploy-autoscaling.yaml --namespace $demo_app_namespace
+
+```
+
+### Deploying Keda scaledobject
+
+* Execute the following
+
+```cli
+
+kubectl describe scaledobject order-processor-scaler -n $demo_app_namespace
+
+kubectl get deployments --namespace $demo_app_namespace -o wide
+
+```
+
+### setting up and running order generator
+
+* Execute the following
+
+```cli
+
+monitor_authorization_rule_name=keda-monitor-send
+az servicebus queue authorization-rule create --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --rights Listen Send
+
+MONITOR_CONNECTION_STRING=$(az servicebus queue authorization-rule keys list --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
+
+echo $MONITOR_CONNECTION_STRING
+
+```
+
+* In `src/Keda.Samples.Dotnet.OrderGenerator/Program.cs`, replace  `MONITOR_CONNECTION_STRING` with the above value
+
+* in a powershell terminal, run: `dotnet run --project .\src\Keda.Samples.Dotnet.OrderGenerator\Keda.Samples.Dotnet.OrderGenerator.csproj`
+
+* When prompted: "Let's queue some orders, how many do you want?" enter `300` 
+
+* In the bash shell: run `watch kubectl get pod -n $demo_app_namespace -o wide`
