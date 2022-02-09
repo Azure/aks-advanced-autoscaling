@@ -3,11 +3,19 @@ param location string = resourceGroup().location
 param aksVersion string = '1.19.13'
 
 param name string = uniqueString(resourceGroup().id)
+@allowed([
+  'australiaeast'
+  'eastus'
+  'eastus2'
+  'northeurope'
+  'southcentralus'
+])
+param loadTestingLocation string = 'southcentralus'
 
+var loadTestName = '${name}loadtesting'
 var vnetName = '${name}-vnet'
 var crName = '${name}acr'
 var aksRoleAssignmentPullACR = guid(resourceGroup().id, containerRegistry.name, aksCluster.id, 'acrpull')
-
 var roleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions','7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
@@ -90,6 +98,14 @@ resource assignACRPullToAks 'Microsoft.Authorization/roleAssignments@2020-04-01-
     principalId: aksCluster.properties.identityProfile.kubeletidentity.objectId
     principalType: 'ServicePrincipal'
     roleDefinitionId: roleDefinitionId
+  }
+}
+
+resource loadtesting 'Microsoft.LoadTestService/loadTests@2021-12-01-preview' = {
+  name: loadTestName
+  location: loadTestingLocation
+  properties: {
+    
   }
 }
 

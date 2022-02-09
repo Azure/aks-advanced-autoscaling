@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1124.51302",
-      "templateHash": "276327191539443278"
+      "templateHash": "7360394114795900625"
     }
   },
   "parameters": {
@@ -78,7 +78,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1124.51302",
-              "templateHash": "2524704387689768807"
+              "templateHash": "4575724490864145285"
             }
           },
           "parameters": {
@@ -93,9 +93,21 @@
             "name": {
               "type": "string",
               "defaultValue": "[uniqueString(resourceGroup().id)]"
+            },
+            "loadTestingLocation": {
+              "type": "string",
+              "defaultValue": "southcentralus",
+              "allowedValues": [
+                "australiaeast",
+                "eastus",
+                "eastus2",
+                "northeurope",
+                "southcentralus"
+              ]
             }
           },
           "variables": {
+            "loadTestName": "[format('{0}loadtesting', parameters('name'))]",
             "vnetName": "[format('{0}-vnet', parameters('name'))]",
             "crName": "[format('{0}acr', parameters('name'))]",
             "aksRoleAssignmentPullACR": "[guid(resourceGroup().id, variables('crName'), resourceId('Microsoft.ContainerService/managedClusters', parameters('name')), 'acrpull')]",
@@ -195,6 +207,13 @@
                 "[resourceId('Microsoft.ContainerService/managedClusters', parameters('name'))]",
                 "[resourceId('Microsoft.ContainerRegistry/registries', variables('crName'))]"
               ]
+            },
+            {
+              "type": "Microsoft.LoadTestService/loadTests",
+              "apiVersion": "2021-12-01-preview",
+              "name": "[variables('loadTestName')]",
+              "location": "[parameters('loadTestingLocation')]",
+              "properties": {}
             }
           ],
           "outputs": {
