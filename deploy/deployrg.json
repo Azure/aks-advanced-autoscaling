@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1124.51302",
-      "templateHash": "7360394114795900625"
+      "templateHash": "12107343671671093071"
     }
   },
   "parameters": {
@@ -43,6 +43,17 @@
         "westus2",
         "francecentral"
       ]
+    },
+    "loadTestingLocation": {
+      "type": "string",
+      "defaultValue": "southcentralus",
+      "allowedValues": [
+        "australiaeast",
+        "eastus",
+        "eastus2",
+        "northeurope",
+        "southcentralus"
+      ]
     }
   },
   "resources": [
@@ -69,6 +80,9 @@
           },
           "aksVersion": {
             "value": "[parameters('aksVersion')]"
+          },
+          "loadTestingLocation": {
+            "value": "[parameters('loadTestingLocation')]"
           }
         },
         "template": {

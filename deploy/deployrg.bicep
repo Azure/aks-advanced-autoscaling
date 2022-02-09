@@ -26,6 +26,15 @@ param aksVersion string = '1.19.13'
 ])
 param location string =  'centralus'
 
+@allowed([
+  'australiaeast'
+  'eastus'
+  'eastus2'
+  'northeurope'
+  'southcentralus'
+])
+param loadTestingLocation string = 'southcentralus'
+
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name:  rgname
@@ -42,5 +51,6 @@ module aksCluster './aksCreation.bicep' = {
   params:{
     name: aksClusterName
     aksVersion: aksVersion
+    loadTestingLocation: loadTestingLocation
   }
 }
