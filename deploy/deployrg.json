@@ -5,14 +5,14 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1124.51302",
-      "templateHash": "12107343671671093071"
+      "templateHash": "3066469670170197004"
     }
   },
   "parameters": {
     "rgname": {
       "type": "string"
     },
-    "aksClusterName": {
+    "alias": {
       "type": "string"
     },
     "aksVersion": {
@@ -75,8 +75,8 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "name": {
-            "value": "[parameters('aksClusterName')]"
+          "alias": {
+            "value": "[parameters('alias')]"
           },
           "aksVersion": {
             "value": "[parameters('aksVersion')]"
@@ -92,7 +92,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1124.51302",
-              "templateHash": "4575724490864145285"
+              "templateHash": "12050104511338023172"
             }
           },
           "parameters": {
@@ -104,9 +104,8 @@
               "type": "string",
               "defaultValue": "1.19.13"
             },
-            "name": {
-              "type": "string",
-              "defaultValue": "[uniqueString(resourceGroup().id)]"
+            "alias": {
+              "type": "string"
             },
             "loadTestingLocation": {
               "type": "string",
@@ -121,10 +120,11 @@
             }
           },
           "variables": {
-            "loadTestName": "[format('{0}loadtesting', parameters('name'))]",
-            "vnetName": "[format('{0}-vnet', parameters('name'))]",
-            "crName": "[format('{0}acr', parameters('name'))]",
-            "aksRoleAssignmentPullACR": "[guid(resourceGroup().id, variables('crName'), resourceId('Microsoft.ContainerService/managedClusters', parameters('name')), 'acrpull')]",
+            "name": "akscluster",
+            "loadTestName": "[format('{0}lvluploadtesting', parameters('alias'))]",
+            "vnetName": "[format('{0}lvlupvnet', parameters('alias'))]",
+            "crName": "[format('{0}lvlupacr', parameters('alias'))]",
+            "aksRoleAssignmentPullACR": "[guid(resourceGroup().id, variables('crName'), resourceId('Microsoft.ContainerService/managedClusters', variables('name')), 'acrpull')]",
             "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]"
           },
           "resources": [
@@ -140,20 +140,20 @@
                 "adminUserEnabled": true
               },
               "dependsOn": [
-                "[resourceId('Microsoft.ContainerService/managedClusters', parameters('name'))]"
+                "[resourceId('Microsoft.ContainerService/managedClusters', variables('name'))]"
               ]
             },
             {
               "type": "Microsoft.ContainerService/managedClusters",
               "apiVersion": "2021-03-01",
-              "name": "[parameters('name')]",
+              "name": "[variables('name')]",
               "location": "[parameters('location')]",
               "identity": {
                 "type": "SystemAssigned"
               },
               "properties": {
                 "kubernetesVersion": "[parameters('aksVersion')]",
-                "dnsPrefix": "[format('{0}-akscluster', parameters('name'))]",
+                "dnsPrefix": "[format('{0}{1}', variables('name'), parameters('alias'))]",
                 "enableRBAC": true,
                 "agentPoolProfiles": [
                   {
@@ -213,12 +213,12 @@
               "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', variables('crName'))]",
               "name": "[variables('aksRoleAssignmentPullACR')]",
               "properties": {
-                "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('name'))).identityProfile.kubeletidentity.objectId]",
+                "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', variables('name'))).identityProfile.kubeletidentity.objectId]",
                 "principalType": "ServicePrincipal",
                 "roleDefinitionId": "[variables('roleDefinitionId')]"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.ContainerService/managedClusters', parameters('name'))]",
+                "[resourceId('Microsoft.ContainerService/managedClusters', variables('name'))]",
                 "[resourceId('Microsoft.ContainerRegistry/registries', variables('crName'))]"
               ]
             },
@@ -233,11 +233,11 @@
           "outputs": {
             "clusterName": {
               "type": "string",
-              "value": "[parameters('name')]"
+              "value": "[variables('name')]"
             },
             "fqdn": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('name'))).fqdn]"
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', variables('name'))).fqdn]"
             },
             "assignmentNameCalc": {
               "type": "string",

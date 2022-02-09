@@ -2,7 +2,7 @@
 param location string = resourceGroup().location
 param aksVersion string = '1.19.13'
 
-param name string = uniqueString(resourceGroup().id)
+param alias string
 @allowed([
   'australiaeast'
   'eastus'
@@ -12,9 +12,10 @@ param name string = uniqueString(resourceGroup().id)
 ])
 param loadTestingLocation string = 'southcentralus'
 
-var loadTestName = '${name}loadtesting'
-var vnetName = '${name}-vnet'
-var crName = '${name}acr'
+var name = 'akscluster'
+var loadTestName = '${alias}lvluploadtesting'
+var vnetName = '${alias}lvlupvnet'
+var crName = '${alias}lvlupacr'
 var aksRoleAssignmentPullACR = guid(resourceGroup().id, containerRegistry.name, aksCluster.id, 'acrpull')
 var roleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions','7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
@@ -41,7 +42,7 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2021-03-01' = {
   }
   properties: {
     kubernetesVersion: aksVersion
-    dnsPrefix: '${name}-akscluster'
+    dnsPrefix: '${name}${alias}'
     enableRBAC: true
     agentPoolProfiles: [
       {

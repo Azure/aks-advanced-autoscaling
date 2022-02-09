@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 param rgname string
-param aksClusterName string
+param alias string
 param aksVersion string = '1.19.13'
 @allowed([
   'eastasia'
@@ -49,7 +49,7 @@ module aksCluster './aksCreation.bicep' = {
   scope: rg
   name: 'aksCluster'
   params:{
-    name: aksClusterName
+    alias: alias
     aksVersion: aksVersion
     loadTestingLocation: loadTestingLocation
   }
