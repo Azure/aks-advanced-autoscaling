@@ -25,9 +25,12 @@ This repo contains the scripts and configurations to deploy the [LevelUP - AKS A
 Get started in your own Azure sub in the [Quickstart.](docs/quickstart.md)
 
 ### LevelUP - AKS Advanced Autoscaling Workshop Lab
-Module 1 Environment Setup and Infrastructure Deployment 
+Module 1 Environment Setup and Infrastructure Deployment
+
 Module 2 [Application Deployment and Testing with Azure Load Testing](module2/README.md)
+
 Module 3 Burst scaling with Azure Container Instances 
+
 Module 4 Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
 
 ## Contributing
