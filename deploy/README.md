@@ -23,8 +23,8 @@ Click this button and provide the parameters in the portal - see parameters belo
 
 Parameter Name | Description 
 -------------- | ----------- 
-### rgname | this parameter is the name of the resource group - the template is a subscription scope which deploys a resource group with all of the necessary resources 
-### alias | this parameter is used to create a unique name for your resources and dns prefix for your aks cluster 
-### aksversion | this parameter is for you to provide what version of kubernetes is installed on the cluster 
-### location | this parameter is the azure datacenter that the resource group and resources will be created in - with the exception of the azure load testing resource which is further limited.  the allowed values for this parameter are datacenters that support aks 
-### loadTestingLocation | the datacenter for load testing - allowed values are datacenters that support the load testing resource 
+ rgname | this parameter is the name of the resource group - the template is a subscription scope which deploys a resource group with all of the necessary resources 
+ alias | this parameter is used to create a unique name for your resources and dns prefix for your aks cluster 
+ aksversion | this parameter is for you to provide what version of kubernetes is installed on the cluster 
+ location | this parameter is the azure datacenter that the resource group and resources will be created in - with the exception of the azure load testing resource which is further limited.  the allowed values for this parameter are datacenters that support aks 
+ loadTestingLocation | the datacenter for load testing - allowed values are datacenters that support the load testing resource 
