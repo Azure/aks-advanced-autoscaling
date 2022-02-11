@@ -10,7 +10,8 @@ Click this button and provide the parameters in the portal - see parameters belo
     because .bicep files are currently not supported for remote deployment you must build your bicep file (transpose it into json) using the bicep CLI - bicep build <filename> which will output a monolithic JSON ARM template. 
     this is the file that is linked to in the button above
     if you were to add resources to the bicep file, you would then need to run bicep build on the file and replace the deployrg.json file with the newly built one
-        * this would require you to have the bicep cli installed on your machine [Install bicep tools](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
+        
+* this would require you to have the bicep cli installed on your machine [Install bicep tools](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 ## Or
 you can [clone the repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) and use az powershell or az cli to deploy the bicep template from your local machine.
 you must have the proper cli and or powershell 
