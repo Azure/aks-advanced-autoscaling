@@ -19,14 +19,8 @@ Click this button and provide the parameters in the portal - see parameters belo
 
 
 # Parameters
-    <table>
-        <tr>
-            <thead>Parameter</thead><thead>Description>
-        </tr>
-        <tr>
-            <td>### rgname</td><td>this parameter is the name of the resource group - the template is a subscription scope which deploys a resource group with all of the necessary resources</td>
-        </tr>
-    </table>
+
+
     | Parameter Name | Description |
     | -------------- | ----------- |
     | ### rgname | this parameter is the name of the resource group - the template is a subscription scope which deploys a resource group with all of the necessary resources |
