@@ -26,12 +26,3 @@ spec:
              key: queue-connection-string
         - name: KEDA_SERVICEBUS_QUEUE_NAME
           value: orders
-      nodeSelector:
-        kubernetes.io/role: agent
-        beta.kubernetes.io/os: linux
-        type: virtual-kubelet
-      tolerations:
-      - key: virtual-kubelet.io/provider
-        operator: Exists
-      - key: azure.com/aci
-        effect: NoSchedule

@@ -22,7 +22,7 @@ Architecture Diagram (Need to update)
 
 This repo contains the scripts and configurations to deploy the [LevelUP - AKS Advanced Autoscaling Workshop](https://github.com/[]) to an example environment. You will use a Code to run the automated deployment scripts. 
 
-Get started in your own Azure sub in the [Quickstart.](docs/Quickstart.md)
+Get started in your own Azure sub in the [Quickstart.](assets/Quickstart.md)
 
 ### LevelUP - AKS Advanced Autoscaling Workshop Lab
 Module 1 Environment Setup and Infrastructure Deployment

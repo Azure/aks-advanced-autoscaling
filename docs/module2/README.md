@@ -10,6 +10,14 @@
 
 ## Setup
 
+## Install Helm
+```cli
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+helm repo add stable https://charts.helm.sh/stable
+
+
 ### Creating AKS clsuter with virtual node add on
 
 * Execute the following
@@ -63,12 +71,6 @@ az aks install-cli
 ### Install KEDA
 
 * Execute the following
-
-```cli
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-chmod 700 get_helm.sh
-./get_helm.sh
-helm repo add stable https://charts.helm.sh/stable
 
 helm repo update
 helm repo add kedacore https://kedacore.github.io/charts
@@ -148,12 +150,5 @@ MONITOR_CONNECTION_STRING=$(az servicebus queue authorization-rule keys list --n
 
 echo $MONITOR_CONNECTION_STRING
 
-```
-
-* In `src/Keda.Samples.Dotnet.OrderGenerator/Program.cs`, replace  `MONITOR_CONNECTION_STRING` with the above value
-
-* in a powershell terminal, run: `dotnet run --project .\src\Keda.Samples.Dotnet.OrderGenerator\Keda.Samples.Dotnet.OrderGenerator.csproj`
-
-* When prompted: "Let's queue some orders, how many do you want?" enter `300` 
 
 * In the bash shell: run `watch kubectl get pod -n $demo_app_namespace -o wide`
