@@ -24,7 +24,7 @@ In order to make this LevelUP run as smoothly as possible, please install [Prere
 
 * Module 1 Environment Setup and Infrastructure Deployment
 
-* Module 2 [Application Deployment and Testing with Azure Load Testing](module2/README.md)
+* Module 2 [Application Deployment and Testing with Azure Load Testing](docs/module2/README.md)
 
 * Module 3 Burst scaling with Azure Container Instances 
 
