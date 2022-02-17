@@ -2,71 +2,15 @@
 
 ## Pre-requisites
 
-- Azure CLI
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - Azure Subscription
-- .NET Core 3.0
+- [.NET Core 3.0](https://dotnet.microsoft.com/en-us/download/dotnet/3.1)
 - powershell
-- helm
+- [helm](https://helm.sh/docs/intro/install/)
 
 ## Setup
 
-## Install Helm
-```cli
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-chmod 700 get_helm.sh
-./get_helm.sh
-helm repo add stable https://charts.helm.sh/stable
 
-
-### Creating AKS clsuter with virtual node add on
-
-* Execute the following
-* Open VS Code Run as Admin
-
-```cli
-
-project_name=vn-take4
-location=eastus
-az group create -n $project_name -l $location
-az configure --defaults location=$location group=$project_name
-
---Note: acr_name cannot have a hyphen
---KMN: changed acr_name to vntake4
-acr_name=vnet4
-az acr create --name $acr_name --sku Basic
-
-vnet_name=$project_name
-aci_subnet_name=aciSubnet
-az network vnet create \
-    --name $vnet_name \
-    --address-prefixes 10.0.0.0/8 \
-    --subnet-name $aci_subnet_name \
-    --subnet-prefix 10.240.0.0/16
-
-virtual_subnet_name=virtualSubnet
-az network vnet subnet create \
-    --vnet-name $vnet_name \
-    --name $virtual_subnet_name \
-    --address-prefixes 10.241.0.0/16
-
-aci_subnet_id=$(az network vnet subnet show --vnet-name $vnet_name --name $aci_subnet_name --query id -o tsv)
-
-virtual_subnet_id=$(az network vnet subnet show --vnet-name $vnet_name --name $virtual_subnet_name --query id -o tsv)
-
-aks_cluster_name=$project_name
-az aks create \
-          --name $aks_cluster_name \
-          --node-count 1 \
-          --attach-acr $acr_name \
-          --network-plugin azure \
-          --aci-subnet-name $virtual_subnet_name \
-          --vnet-subnet-id $aci_subnet_id \
-          --enable-addons virtual-node \
-          --generate-ssh-keys
-Note: I used a system assigned identity
-az aks install-cli
-
-```
 
 ### Install KEDA
 
