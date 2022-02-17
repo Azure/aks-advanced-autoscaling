@@ -7,4 +7,4 @@
 - [PowerShell](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#azure-powershell)
 - [helm](https://helm.sh/docs/intro/install/)
 - [Bicep Tools](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
-- [Kubernetes Extension](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) https://marketplace.visualstudio.com/items?itemName=ms-kubernetes-tools.vscode-kubernetes-tools
+- [Kubernetes Extension](https://marketplace.visualstudio.com/items?itemName=ms-kubernetes-tools.vscode-kubernetes-tools)
