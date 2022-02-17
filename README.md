@@ -16,7 +16,7 @@ The business scenario is []
 
 Architecture Diagram
 
-![Architecture diagram](assets/architecture.png)
+![Architecture diagram](assets/Architecture.png)
 
 
 ### LevelUP - AKS Advanced Autoscaling Workshop Lab
