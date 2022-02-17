@@ -15,23 +15,20 @@ The business scenario is []
 ### Architecture
 
 Architecture Diagram
-![Architecture diagram](assets/Architecture.png)
 
+![Architecture diagram](assets/architecture.png)
 
-### Getting Started
-
-This repo contains the scripts and configurations to deploy the [LevelUP - AKS Advanced Autoscaling Workshop](https://github.com/[]) to an example environment. You can use VS Code to run the deployment scripts. 
 
 ### LevelUP - AKS Advanced Autoscaling Workshop Lab
 In order to make this LevelUP run as smoothly as possible, please install [Prerequisites](assets/Prerequisites.md) prior to the LevelUP.
 
-Module 1 Environment Setup and Infrastructure Deployment
+* Module 1 Environment Setup and Infrastructure Deployment
 
-Module 2 [Application Deployment and Testing with Azure Load Testing](module2/README.md)
+* Module 2 [Application Deployment and Testing with Azure Load Testing](module2/README.md)
 
-Module 3 Burst scaling with Azure Container Instances 
+* Module 3 Burst scaling with Azure Container Instances 
 
-Module 4 Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
+* Module 4 Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
 
 ## Contributing
 

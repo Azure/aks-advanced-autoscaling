@@ -1,4 +1,4 @@
-# Instructions
+# Welcome to: Module 2: Application Deployment and Testing with Azure Load Testing
 
 ### Install KEDA
 
