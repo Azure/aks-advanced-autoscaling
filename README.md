@@ -14,17 +14,17 @@ The business scenario is []
 
 ### Architecture
 
-Architecture Diagram (Need to update)
+Architecture Diagram
 ![Architecture diagram](assets/Architecture.png)
 
 
-### Getting Started --KMN: Not sure if we want to include pre-reqs here or within module 1
+### Getting Started
 
-This repo contains the scripts and configurations to deploy the [LevelUP - AKS Advanced Autoscaling Workshop](https://github.com/[]) to an example environment. You will use a Code to run the automated deployment scripts. 
-
-Get started in your own Azure sub in the [Quickstart.](assets/Quickstart.md)
+This repo contains the scripts and configurations to deploy the [LevelUP - AKS Advanced Autoscaling Workshop](https://github.com/[]) to an example environment. You can use VS Code to run the deployment scripts. 
 
 ### LevelUP - AKS Advanced Autoscaling Workshop Lab
+In order to make this LevelUP run as smoothly as possible, please install [Prerequisites](assets/Prerequisites.md) prior to the LevelUP.
+
 Module 1 Environment Setup and Infrastructure Deployment
 
 Module 2 [Application Deployment and Testing with Azure Load Testing](module2/README.md)

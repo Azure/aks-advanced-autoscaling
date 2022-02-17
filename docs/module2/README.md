@@ -1,17 +1,5 @@
 # Instructions
 
-## Pre-requisites
-
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-- Azure Subscription
-- [.NET Core 3.0](https://dotnet.microsoft.com/en-us/download/dotnet/3.1)
-- powershell
-- [helm](https://helm.sh/docs/intro/install/)
-
-## Setup
-
-
-
 ### Install KEDA
 
 * Execute the following
