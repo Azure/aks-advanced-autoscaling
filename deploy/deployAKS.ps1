@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param (
-    [string]$Location = 'eastus2',
+    [string]$Location = 'centralus',
     [string]$TemplateFile = '.\deployrg.bicep',
     [string]$TemplateParameterFile = '.\deployrg.parameters.json'
 )
