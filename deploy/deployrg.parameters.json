@@ -4,9 +4,6 @@
     "parameters": {
         "rgName": {
             "value": "leveluprg"
-        },
-        "aksClusterName": {
-            "value": "mccsalevelup"
-        }
+        }       
     }
 }
