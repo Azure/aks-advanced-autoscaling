@@ -19,9 +19,6 @@ kubectl create namespace keda
 helm install keda kedacore/keda --namespace keda
 ```
 
-
-```
-
 ### Creating a new Azure Service Bus namespace & queue
 
 * Execute the following
@@ -42,7 +39,7 @@ az servicebus queue authorization-rule create --namespace-name $servicebus_names
 
 queue_connection_string=$(az servicebus queue authorization-rule keys list --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --query primaryConnectionString -o tsv)
 
-demo_app_namespace=keda-dotnet-sample
+demo_app_namespace=order-processor
 kubectl create namespace $demo_app_namespace
 
 keda_servicebus_secret=keda-servicebus-secret
@@ -52,7 +49,7 @@ kubectl create secret generic order-consumer-secret --from-literal=queue-connect
 
 ```
 
-### Deploying demo app
+### Deploying order processor app
 
 * Execute the following
 
@@ -80,7 +77,7 @@ kubectl get deployments --namespace $demo_app_namespace -o wide
 
 ```
 
-### setting up and running order generator
+### Setting up and running service bus
 
 * Execute the following
 
@@ -91,7 +88,19 @@ az servicebus queue authorization-rule create --namespace-name $servicebus_names
 
 MONITOR_CONNECTION_STRING=$(az servicebus queue authorization-rule keys list --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
 
-echo $MONITOR_CONNECTION_STRING
+echo $MONITOR_CONNECTION_STRING | base64
 
+```
+### Deploying order processor app
+
+* Execute the following
+-- Copy the $MONITOR_CONNECTION_STRING from above value and paste into eploy\deploy-web.yaml servicebus-connectionstring
+demo_web_namespace=order-portal
+
+kubectl apply -f deploy/deploy-app.yaml --namespace $demo_web_namespace
+
+kubectl get pod -n $demo_web_namespace -o wide
+
+### Watching the pods scale
 
 * In the bash shell: run `watch kubectl get pod -n $demo_app_namespace -o wide`
