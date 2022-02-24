@@ -47,6 +47,13 @@ kubectl create secret generic $keda_servicebus_secret --from-literal=keda-connec
 
 kubectl create secret generic order-consumer-secret --from-literal=queue-connection-string=$queue_connection_string -n $demo_app_namespace
 
+demo_web_namespace=order-portal
+kubectl create namespace $demo_web_namespace
+kubectl create secret generic $keda_servicebus_secret --from-literal=keda-connection-string=$keda_connection_string -n $demo_web_namespace
+
+kubectl create secret generic order-consumer-secret --from-literal=queue-connection-string=$queue_connection_string -n $demo_web_namespace
+
+
 ```
 
 ### Deploying order processor app
@@ -77,6 +84,15 @@ kubectl get deployments --namespace $demo_app_namespace -o wide
 
 ```
 
+### Deploying order processor app
+
+* Execute the following
+
+kubectl apply -f deploy/deploy-app.yaml --namespace $demo_web_namespace
+
+kubectl get pod -n $demo_web_namespace -o wide
+
+
 ### Setting up and running service bus
 
 * Execute the following
@@ -88,14 +104,11 @@ az servicebus queue authorization-rule create --namespace-name $servicebus_names
 
 MONITOR_CONNECTION_STRING=$(az servicebus queue authorization-rule keys list --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
 
-echo $MONITOR_CONNECTION_STRING | base64
-
+echo $MONITOR_CONNECTION_STRING 
 ```
 ### Deploying order processor app
 
 * Execute the following
--- Copy the $MONITOR_CONNECTION_STRING from above value and paste into eploy\deploy-web.yaml servicebus-connectionstring
-demo_web_namespace=order-portal
 
 kubectl apply -f deploy/deploy-app.yaml --namespace $demo_web_namespace
 
