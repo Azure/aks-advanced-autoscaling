@@ -3,7 +3,7 @@
 ### Install KEDA
 ```
 * Execute the following
-az aks enable-addons --addons open-service-mesh -g 'resource_name' -n 'aks_cluster-name'
+az aks enable-addons --addons open-service-mesh -g 'resource_group' -n 'aks_cluster-name'
 
 az aks show -g 'resource_name' -n 'aks_cluster-name'  --query 'addonProfiles.openServiceMesh.enabled'
 ```
