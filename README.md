@@ -1,8 +1,9 @@
 # Welcome to: Module 4: Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
 
 ### Install KEDA
-```
+
 * Execute the following
+```
 az aks enable-addons --addons open-service-mesh -g 'resource_group' -n 'aks_cluster-name'
 
 az aks show -g 'resource_group' -n 'aks_cluster-name'  --query 'addonProfiles.openServiceMesh.enabled'
