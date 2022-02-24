@@ -5,9 +5,16 @@
 * Execute the following
 
 ```
-helm repo update
+
+rg_name=[name of rg created in module 1]
+akscluster_name=[name of aks cluster created in module 1]
+
+
 helm repo add kedacore https://kedacore.github.io/charts
-az aks get-credentials -n $project_name
+helm repo update
+
+az aks get-credentials --admin --name $rg_name --resource-group $akscluster_name
+
 kubectl create namespace keda
 helm install keda kedacore/keda --namespace keda
 ```
@@ -20,8 +27,9 @@ helm install keda kedacore/keda --namespace keda
 * Execute the following
 
 ```cli
-
+project_name=servicebus
 servicebus_namespace=$project_name
+
 az servicebus namespace create --name $servicebus_namespace --sku basic
 
 keda_connection_string=$(az servicebus namespace authorization-rule keys list  --namespace-name $servicebus_namespace --name RootManageSharedAccessKey --query primaryConnectionString -o tsv)
@@ -49,7 +57,7 @@ kubectl create secret generic order-consumer-secret --from-literal=queue-connect
 * Execute the following
 
 ```cli
-
+cd [file path to module2]
 kubectl apply -f deploy/deploy-app.yaml --namespace $demo_app_namespace
 
 kubectl get pod -n $demo_app_namespace -o wide
