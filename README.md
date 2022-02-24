@@ -48,7 +48,7 @@ prometheus-community/kube-prometheus-stack -f values.yaml \
 
 ```
 
-### In OSM CLI and enableling OSM metrics
+### In OSM CLI and enabling OSM metrics for apps
 
 * Execute the following
 
