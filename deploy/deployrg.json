@@ -8,7 +8,7 @@
       "templateHash": "3066469670170197004"
     }
   },
-  "parameters": {
+  "parameters": {    
     "rgname": {
       "type": "string"
     },
