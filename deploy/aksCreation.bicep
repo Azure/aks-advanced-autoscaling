@@ -1,6 +1,6 @@
 
 param location string = resourceGroup().location
-param aksVersion string = '1.19.13'
+
 
 param alias string
 @allowed([
@@ -41,7 +41,6 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2021-03-01' = {
     type: 'SystemAssigned'
   }
   properties: {
-    kubernetesVersion: aksVersion
     dnsPrefix: '${name}${alias}'
     enableRBAC: true
     agentPoolProfiles: [

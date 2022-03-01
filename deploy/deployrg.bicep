@@ -50,7 +50,6 @@ module aksCluster './aksCreation.bicep' = {
   name: 'aksCluster'
   params:{
     alias: alias
-    aksVersion: aksVersion
     loadTestingLocation: loadTestingLocation
   }
 }
