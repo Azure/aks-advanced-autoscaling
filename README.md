@@ -1,6 +1,6 @@
 # Welcome to: Module 4: Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
 
-### Install KEDA
+### Install OpenServiceMesh
 
 * Execute the following
 ```
