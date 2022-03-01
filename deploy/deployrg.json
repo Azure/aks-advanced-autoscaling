@@ -5,19 +5,15 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1124.51302",
-      "templateHash": "3066469670170197004"
+      "templateHash": "4706332921150283000"
     }
   },
-  "parameters": {    
+  "parameters": {
     "rgname": {
       "type": "string"
     },
     "alias": {
       "type": "string"
-    },
-    "aksVersion": {
-      "type": "string",
-      "defaultValue": "1.19.13"
     },
     "location": {
       "type": "string",
@@ -78,9 +74,6 @@
           "alias": {
             "value": "[parameters('alias')]"
           },
-          "aksVersion": {
-            "value": "[parameters('aksVersion')]"
-          },
           "loadTestingLocation": {
             "value": "[parameters('loadTestingLocation')]"
           }
@@ -92,17 +85,13 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1124.51302",
-              "templateHash": "12050104511338023172"
+              "templateHash": "9169418667444972492"
             }
           },
           "parameters": {
             "location": {
               "type": "string",
               "defaultValue": "[resourceGroup().location]"
-            },
-            "aksVersion": {
-              "type": "string",
-              "defaultValue": "1.19.13"
             },
             "alias": {
               "type": "string"
@@ -152,7 +141,6 @@
                 "type": "SystemAssigned"
               },
               "properties": {
-                "kubernetesVersion": "[parameters('aksVersion')]",
                 "dnsPrefix": "[format('{0}{1}', variables('name'), parameters('alias'))]",
                 "enableRBAC": true,
                 "agentPoolProfiles": [
