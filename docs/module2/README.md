@@ -71,7 +71,18 @@ kubectl get pod -n $demo_app_namespace -o wide
 kubectl apply -f deploy/deploy-autoscaling.yaml --namespace $demo_app_namespace
 
 ```
+* Alternative the following:
 
+```
+kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module2/docs/module2/deploy/deploy-app.yaml -n $demo_app_namespace
+
+kubectl get pod -n $demo_app_namespace -o wide
+
+--Wait for the pod to be in Running state before proceeding to the next step.
+
+kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module2/docs/module2/deploy/deploy-autoscaling.yaml -n $demo_app_namespace
+
+```
 ### Deploying Keda scaledobject
 
 * Execute the following
