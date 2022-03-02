@@ -95,14 +95,23 @@ kubectl get deployments --namespace $demo_app_namespace -o wide
 
 ```
 
-### Deploying order processor app
+### Deploying web order portal
 
 * Execute the following
+```
+cd [file path to module2]
+kubectl apply -f deploy/deploy-web.yaml --namespace $demo_web_namespace
 
-kubectl apply -f deploy/deploy-app.yaml --namespace $demo_web_namespace
+kubectl get pod,svc -n $demo_web_namespace -o wide
+```
 
-kubectl get pod -n $demo_web_namespace -o wide
+* Alternative the following:
 
+```
+kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module2/docs/module2/deploy/deploy-web.yaml -n $demo_web_namespace
+
+kubectl get pod,svc -n $demo_web_namespace -o wide
+```
 
 ### Setting up and running service bus
 
