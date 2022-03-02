@@ -13,7 +13,7 @@ akscluster_name=[name of aks cluster created in module 1]
 helm repo add kedacore https://kedacore.github.io/charts
 helm repo update
 
-az aks get-credentials --admin -rg $rg_name --name $akscluster_name
+az aks get-credentials --admin -g $rg_name --name $akscluster_name
 
 kubectl create namespace keda
 helm install keda kedacore/keda --namespace keda
