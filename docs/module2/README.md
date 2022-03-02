@@ -35,7 +35,7 @@ queue_name=orders
 az servicebus queue create -g $rg_name --namespace-name $servicebus_namespace --name $queue_name
 
 authorization_rule_name=order-consumer
-az servicebus queue authorization-rule create --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --rights Listen
+az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --rights Listen
 
 queue_connection_string=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --query primaryConnectionString -o tsv)
 
