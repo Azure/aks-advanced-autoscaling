@@ -27,17 +27,17 @@ helm install keda kedacore/keda --namespace keda
 project_name=servicebus
 servicebus_namespace=$project_name
 
-az servicebus namespace create --name $servicebus_namespace --sku basic
+az servicebus namespace create --name $servicebus_namespace -g $rg_name --sku basic
 
-keda_connection_string=$(az servicebus namespace authorization-rule keys list  --namespace-name $servicebus_namespace --name RootManageSharedAccessKey --query primaryConnectionString -o tsv)
+keda_connection_string=$(az servicebus namespace authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --name RootManageSharedAccessKey --query primaryConnectionString -o tsv)
 
 queue_name=orders
-az servicebus queue create --namespace-name $servicebus_namespace --name $queue_name
+az servicebus queue create -g $rg_name --namespace-name $servicebus_namespace --name $queue_name
 
 authorization_rule_name=order-consumer
 az servicebus queue authorization-rule create --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --rights Listen
 
-queue_connection_string=$(az servicebus queue authorization-rule keys list --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --query primaryConnectionString -o tsv)
+queue_connection_string=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --query primaryConnectionString -o tsv)
 
 demo_app_namespace=order-processor
 kubectl create namespace $demo_app_namespace
