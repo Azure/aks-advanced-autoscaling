@@ -25,7 +25,7 @@ spec:
              name: order-consumer-secret
              key: queue-connection-string
         - name: KEDA_SERVICEBUS_QUEUE_NAME        
-             value: orders
+          value: orders
 ---
 apiVersion: v1
 kind: Service
