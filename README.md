@@ -118,7 +118,7 @@ spec:
     fqdn: $myip_dns
   routes:
   - services:
-    - name: order-web
+    - name: kedasampleweb
       port: 80
 ---
 kind: IngressBackend
@@ -137,6 +137,7 @@ spec:
     namespace: projectcontour
     name: mycontour-contour-envoy
 EOF
+
 ```
 
 ### Create KEDA ScaledObject based on Query
