@@ -162,9 +162,9 @@ To create a Load Testing resource:
 
 5. On the Azure Load Testing pane, select Create.
 
-6. Provide the following information to configure your new Azure Load Testing resource:
-
 ![Create ALT resource - step 6](../../assets/create-azure-load-testing.png)
+
+Provide the following information to configure your new Azure Load Testing resource:
 
 | Field	            | Description   |
 | :---              | :---          |
@@ -172,6 +172,16 @@ To create a Load Testing resource:
 | Resource group	| Select an existing resource group. Or select Create new, and then enter a unique name for the new resource group. |
 | Name	            | Enter a unique name to identify your Azure Load Testing resource. The name can't contain special characters, such as \/""[]:|<>+=;,?*@&, or whitespace. The name can't begin with an underscore (_), and it can't end with a period (.) or a dash (-). The length must be 1 to 64 characters. 
 | Location	        | Select a geographic location to host your Azure Load Testing resource. |
+
+### Prepare the JMeter Script file (*.jmx) 
+
+1. Open the file "deploy/LvLUpAutoscalingLoadTest.jmx" with your preferred XML Editor. Note: Visual Studio Code will work.   
+> A jmx file is based on xml structure. 
+> Please feel free to save a copy of the jmx file in case you want to keep a copy of the original version 
+
+2. 
+
+
 
 
 
