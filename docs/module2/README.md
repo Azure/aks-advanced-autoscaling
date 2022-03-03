@@ -29,8 +29,6 @@ servicebus_namespace=$project_name
 
 az servicebus namespace create --name $servicebus_namespace -g $rg_name --sku basic
 
-keda_connection_string=$(az servicebus namespace authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --name RootManageSharedAccessKey --query primaryConnectionString -o tsv)
-
 queue_name=orders
 az servicebus queue create -g $rg_name --namespace-name $servicebus_namespace --name $queue_name
 
@@ -42,16 +40,20 @@ queue_connection_string=$(az servicebus queue authorization-rule keys list -g $r
 demo_app_namespace=order-processor
 kubectl create namespace $demo_app_namespace
 
+monitor_authorization_rule_name=order-monitor
+az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --rights Manage Send Listen
+
+monitor_connection_string=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
+
 keda_servicebus_secret=keda-servicebus-secret
-kubectl create secret generic $keda_servicebus_secret --from-literal=keda-connection-string=$keda_connection_string -n $demo_app_namespace
+kubectl create secret generic $keda_servicebus_secret --from-literal=keda-connection-string=$monitor_connection_string -n $demo_app_namespace
 
 kubectl create secret generic order-consumer-secret --from-literal=queue-connection-string=$queue_connection_string -n $demo_app_namespace
 
 demo_web_namespace=order-portal
 kubectl create namespace $demo_web_namespace
-kubectl create secret generic $keda_servicebus_secret --from-literal=keda-connection-string=$keda_connection_string -n $demo_web_namespace
 
-kubectl create secret generic order-consumer-secret --from-literal=queue-connection-string=$queue_connection_string -n $demo_web_namespace
+kubectl create secret generic order-consumer-secret --from-literal=queue-connection-string=$monitor_connection_string -n $demo_web_namespace
 
 
 ```
@@ -64,11 +66,11 @@ kubectl create secret generic order-consumer-secret --from-literal=queue-connect
 cd [file path to module2]
 kubectl apply -f deploy/deploy-app.yaml --namespace $demo_app_namespace
 
-kubectl get pod -n $demo_app_namespace -o wide
-
---Wait for the pod to be in Running state before proceeding to the next step.
-
 kubectl apply -f deploy/deploy-autoscaling.yaml --namespace $demo_app_namespace
+
+kubectl get hpa -n $demo_app_namespace -o wide 
+
+--Take a look at the HPA state before proceeding to the next step.
 
 ```
 * Alternative the following:
@@ -76,11 +78,11 @@ kubectl apply -f deploy/deploy-autoscaling.yaml --namespace $demo_app_namespace
 ```
 kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module2/docs/module2/deploy/deploy-app.yaml -n $demo_app_namespace
 
-kubectl get pod -n $demo_app_namespace -o wide
-
---Wait for the pod to be in Running state before proceeding to the next step.
-
 kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module2/docs/module2/deploy/deploy-autoscaling.yaml -n $demo_app_namespace
+
+kubectl get hpa -n $demo_app_namespace -o wide 
+
+--Take a look at the HPA state before proceeding to the next step.
 
 ```
 ### Deploying Keda scaledobject
@@ -102,7 +104,10 @@ kubectl get deployments --namespace $demo_app_namespace -o wide
 cd [file path to module2]
 kubectl apply -f deploy/deploy-web.yaml --namespace $demo_web_namespace
 
-kubectl get pod,svc -n $demo_web_namespace -o wide
+kubectl get pod -n $demo_web_namespace -w 
+
+--Wait for the pod to be in Running state before proceeding to the next step.
+
 ```
 
 * Alternative the following:
@@ -110,10 +115,15 @@ kubectl get pod,svc -n $demo_web_namespace -o wide
 ```
 kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module2/docs/module2/deploy/deploy-web.yaml -n $demo_web_namespace
 
-kubectl get pod,svc -n $demo_web_namespace -o wide
+kubectl get pod -n $demo_web_namespace -w 
+
+--Wait for the pod to be in Running state before proceeding to the next step.
+
 ```
 
-### Setting up and running service bus
+### Optional and to be replace by ALT configuration 
+
+#### Setting up and running service bus
 
 * Execute the following
 
@@ -126,17 +136,13 @@ MONITOR_CONNECTION_STRING=$(az servicebus queue authorization-rule keys list --n
 
 echo $MONITOR_CONNECTION_STRING 
 ```
-### Deploying order processor app
+#### Publishing messages to the queue
 
-* Execute the following
+https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/blob/main/connection-string-scenario.md#publishing-messages-to-the-queue
 
-kubectl apply -f deploy/deploy-app.yaml --namespace $demo_web_namespace
+#### Watching the pods scale
 
-kubectl get pod -n $demo_web_namespace -o wide
-
-### Watching the pods scale
-
-* In the bash shell: run `watch kubectl get pod -n $demo_app_namespace -o wide`
+* In the bash shell: run `watch kubectl get pod -n $demo_app_namespace -w`
 
 ### Creating Azure Load Testing resource, a centralized place to view and manage test plans, test results, and related artifacts
 
