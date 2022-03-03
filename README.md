@@ -143,7 +143,7 @@ EOF
 ### Create KEDA ScaledObject based on Query
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/javierromancsa/aks-keda-http-osm-autoscaling/main/keda_bookstore_http.yaml
+kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/keda_order_http.yaml
 ```
 
 
