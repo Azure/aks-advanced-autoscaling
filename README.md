@@ -111,7 +111,7 @@ kubectl apply -f - <<EOF
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
-  name: order-portal-proxy
+  name: orderportalproxy
   namespace: order-portal
 spec:
   virtualhost:
@@ -124,7 +124,7 @@ spec:
 kind: IngressBackend
 apiVersion: policy.openservicemesh.io/v1alpha1
 metadata:
-  name: bookstorebackend
+  name: orderportalbackend
   namespace: order-portal
 spec:
   backends:
