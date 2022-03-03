@@ -154,7 +154,7 @@ To create a Load Testing resource:
 
 2. Select the menu button in the upper-left corner of the portal, and then select + Create a resource.
 
-![Create ALT resource - step 2](assets/create-resource.png)
+![Create ALT resource - step 2](../../assets/create-resource.png)
 
 3. Use the search bar to find Azure Load Testing.
 
@@ -163,13 +163,14 @@ To create a Load Testing resource:
 5. On the Azure Load Testing pane, select Create.
 
 6. Provide the following information to configure your new Azure Load Testing resource:
-![Create ALT resource - step 6](assets/create-azure-load-testing.png)
+
+![Create ALT resource - step 6](../../assets/create-azure-load-testing.png)
 
 | Field	            | Description   |
 | :---              | :---          |
 | Subscription	    | Select the Azure subscription that you want to use for this Azure Load Testing resource. |
 | Resource group	| Select an existing resource group. Or select Create new, and then enter a unique name for the new resource group. |
-| Name	            | Enter a unique name to identify your Azure Load Testing resource. </ br> The name can't contain special characters, such as \/""[]:|<>+=;,?*@&, or whitespace. The name can't begin with an underscore (_), and it can't end with a period (.) or a dash (-). The length must be 1 to 64 characters. </ br>
+| Name	            | Enter a unique name to identify your Azure Load Testing resource. The name can't contain special characters, such as \/""[]:|<>+=;,?*@&, or whitespace. The name can't begin with an underscore (_), and it can't end with a period (.) or a dash (-). The length must be 1 to 64 characters. 
 | Location	        | Select a geographic location to host your Azure Load Testing resource. |
 
 
