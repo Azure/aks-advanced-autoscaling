@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1124.51302",
-      "templateHash": "4706332921150283000"
+      "templateHash": "14473870984318751313"
     }
   },
   "parameters": {
@@ -76,6 +76,9 @@
           },
           "loadTestingLocation": {
             "value": "[parameters('loadTestingLocation')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
           }
         },
         "template": {
@@ -232,6 +235,89 @@
               "value": "[variables('aksRoleAssignmentPullACR')]"
             }
           }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgname'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "servicebus",
+      "resourceGroup": "[parameters('rgname')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "alias": {
+            "value": "[parameters('alias')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.4.1124.51302",
+              "templateHash": "7922864535883151252"
+            }
+          },
+          "parameters": {
+            "alias": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "name": "[format('{0}servicebus', parameters('alias'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ServiceBus/namespaces/AuthorizationRules",
+              "apiVersion": "2015-08-01",
+              "name": "[format('{0}/{1}', variables('name'), 'RootManageSharedAccessKey')]",
+              "properties": {
+                "rights": [
+                  "Listen",
+                  "Manage",
+                  "Send"
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ServiceBus/namespaces', variables('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.ServiceBus/namespaces",
+              "apiVersion": "2015-08-01",
+              "name": "[variables('name')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 1
+              }
+            },
+            {
+              "type": "Microsoft.ServiceBus/namespaces/queues",
+              "apiVersion": "2015-08-01",
+              "name": "[format('{0}/{1}', variables('name'), 'orders')]",
+              "location": "[parameters('location')]",
+              "properties": {},
+              "dependsOn": [
+                "[resourceId('Microsoft.ServiceBus/namespaces', variables('name'))]"
+              ]
+            }
+          ]
         }
       },
       "dependsOn": [
