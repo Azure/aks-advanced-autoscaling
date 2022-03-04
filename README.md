@@ -147,9 +147,9 @@ kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscalin
 ```
 
 
-### Create KEDA ScaledObject based on Query
+### Watch the pods been created:
 
 ```
-
+kubectl get pods -n order-portal -w
 ```
 
