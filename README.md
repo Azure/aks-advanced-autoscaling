@@ -83,7 +83,7 @@ kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 909
 
 ```
 envoy_cluster_upstream_rq_xx{envoy_response_code_class="2"}
-sum(rate(envoy_cluster_upstream_rq_xx{envoy_cluster_name="order-portal"}[1m]))
+
 ```
 
 ### Installing Contour in AKS:
