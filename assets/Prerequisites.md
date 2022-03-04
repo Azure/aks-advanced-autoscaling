@@ -8,3 +8,4 @@
 - [helm](https://helm.sh/docs/intro/install/)
 - [Bicep Tools](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 - [Kubernetes Extension](https://marketplace.visualstudio.com/items?itemName=ms-kubernetes-tools.vscode-kubernetes-tools)
+- [OSM cli](https://release-v1-0.docs.openservicemesh.io/docs/guides/cli/)
