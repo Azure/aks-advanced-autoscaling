@@ -97,7 +97,7 @@ helm install mycontour bitnami/contour --namespace projectcontour --create-names
 kubectl -n projectcontour get po,svc
 ```
 
-### Create HTTPProxy and ingressBackend for bookstore appplication
+### Create HTTPProxy and ingressBackend for Order-web application
 #### Get the public/External IP of the Azure loadbalancer created for the Contour Services
 ```
 dns=".nip.io"
