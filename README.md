@@ -30,7 +30,7 @@ kubectl get services -n kube-system --selector app.kubernetes.io/name=openservic
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 helm install prometheus \
-prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/javierromancsa/aks-keda-http-osm-autoscaling/main/byo_values.yaml \
+prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/byo_values.yaml \
 --namespace monitoring \
 --create-namespace
 
@@ -42,7 +42,7 @@ prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/
 
 ```
 helm upgrade prometheus \
-prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/javierromancsa/aks-keda-http-osm-autoscaling/main/byo_values.yaml \
+prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/byo_values.yaml \
 --namespace monitoring \
 --set kubeEtcd.enabled=false \
 --set kubeControllerManager.enabled=false \
