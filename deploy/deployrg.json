@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1124.51302",
-      "templateHash": "14473870984318751313"
+      "templateHash": "16053185471817004317"
     }
   },
   "parameters": {
@@ -88,7 +88,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1124.51302",
-              "templateHash": "9169418667444972492"
+              "templateHash": "1917431243428290819"
             }
           },
           "parameters": {
@@ -172,6 +172,30 @@
               ]
             },
             {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2021-05-01",
+              "name": "[format('{0}AKSNSG', parameters('alias'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": [
+                  {
+                    "name": "allowhttp",
+                    "properties": {
+                      "access": "Allow",
+                      "description": "Allow port 80 traffic",
+                      "destinationAddressPrefix": "*",
+                      "destinationPortRange": "80",
+                      "direction": "Inbound",
+                      "priority": 1000,
+                      "protocol": "Tcp",
+                      "sourceAddressPrefix": "*",
+                      "sourcePortRange": "*"
+                    }
+                  }
+                ]
+              }
+            },
+            {
               "type": "Microsoft.Network/virtualNetworks",
               "apiVersion": "2019-11-01",
               "name": "[variables('vnetName')]",
@@ -186,7 +210,10 @@
                   {
                     "name": "aksSubnet",
                     "properties": {
-                      "addressPrefix": "10.241.0.0/16"
+                      "addressPrefix": "10.241.0.0/16",
+                      "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', format('{0}AKSNSG', parameters('alias')))]"
+                      }
                     }
                   },
                   {
@@ -196,7 +223,10 @@
                     }
                   }
                 ]
-              }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', format('{0}AKSNSG', parameters('alias')))]"
+              ]
             },
             {
               "type": "Microsoft.Authorization/roleAssignments",

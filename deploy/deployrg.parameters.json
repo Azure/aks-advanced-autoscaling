@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "rgName": {
-            "value": "leveluprg8"
+            "value": "lvluprg"
         },
         "alias": {
-            "value": "macant3"
+            "value": "<your alias>"
         },
         "location": {
             "value": "eastus"
