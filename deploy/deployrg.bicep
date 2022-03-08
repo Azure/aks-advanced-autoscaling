@@ -51,5 +51,15 @@ module aksCluster './aksCreation.bicep' = {
   params:{
     alias: alias
     loadTestingLocation: loadTestingLocation
+    location: location
+  }
+}
+
+module servicebus 'servicebuscreation.bicep' = {
+  scope: rg
+  name: 'servicebus'
+  params:{
+    location: location
+    alias: alias
   }
 }

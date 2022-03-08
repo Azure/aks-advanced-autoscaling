@@ -65,6 +65,31 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2021-03-01' = {
     }
   }
 }
+
+resource NSG 'Microsoft.Network/networkSecurityGroups@2021-05-01' = {
+  name: '${alias}AKSNSG'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'allowhttp'
+        properties:{ 
+          access: 'Allow'
+          description: 'Allow port 80 traffic'
+          destinationAddressPrefix:'*'
+          destinationPortRange: '80'
+          direction: 'Inbound'
+          priority: 1000
+          protocol: 'Tcp'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+        }
+      }
+    ]
+  }
+}
+
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
   name: vnetName
   location: location
@@ -79,6 +104,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
         name: 'aksSubnet'
         properties: {
           addressPrefix: '10.241.0.0/16'
+          networkSecurityGroup: {
+            id: NSG.id
+          }
         }
       }
       {
