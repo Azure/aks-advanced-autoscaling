@@ -4,11 +4,11 @@
 
 * Execute the following
 ```
-az aks enable-addons --addons open-service-mesh -g 'resource_group' -n 'aks_cluster-name'
+az aks enable-addons --addons open-service-mesh -g $rg_name -n $akscluster_name
 ```
 * Verify it was enabled
 ```
-az aks show -g 'resource_group' -n 'aks_cluster-name'  --query 'addonProfiles.openServiceMesh.enabled'
+az aks show -g $rg_name -n $akscluster_name --query 'addonProfiles.openServiceMesh.enabled'
 ```
 
 ### Verify the status of OSM in kube-system namespace
