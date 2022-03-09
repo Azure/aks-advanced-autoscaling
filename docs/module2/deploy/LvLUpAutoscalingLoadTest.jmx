@@ -37,7 +37,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">[yourasbnamespace.servicebus.windows.net]</stringProp>
+          <stringProp name="HTTPSampler.domain">${endpoint_uri}</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -200,14 +200,12 @@
             <stringProp name="filename"></stringProp>
           </ResultCollector>
           <hashTree/>
-          <Summariser guiclass="SummariserGui" testclass="Summariser" testname="Generate Summary Results" enabled="true"/>
-          <hashTree/>
         </hashTree>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Authorization</stringProp>
-              <stringProp name="Header.value">[Insert your Shared Access Key here]</stringProp>
+              <stringProp name="Header.value">${sastoken}</stringProp>
             </elementProp>
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Content-Type</stringProp>
@@ -217,6 +215,21 @@
         </HeaderManager>
         <hashTree/>
       </hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="sastoken" elementType="Argument">
+            <stringProp name="Argument.name">sastoken</stringProp>
+            <stringProp name="Argument.value">${__GetSecret(sastoken)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="endpoint_uri" elementType="Argument">
+            <stringProp name="Argument.name">endpoint_uri</stringProp>
+            <stringProp name="Argument.value">${__BeanShell( System.getenv(&quot;endpoint_uri&quot;) )}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
     </hashTree>
   </hashTree>
 </jmeterTestPlan>

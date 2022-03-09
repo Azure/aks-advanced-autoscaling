@@ -144,42 +144,287 @@ https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/blob/main/conn
 
 * In the bash shell: run `watch kubectl get pod -n $demo_app_namespace -w`
 
-### Creating Azure Load Testing resource, a centralized place to view and manage test plans, test results, and related artifacts
+### Retrieve Shared Access Key with proper string formatting/encoding
 
-If you already have a Load Testing resource, skip this section.
+Open (or reuse) a bash/sh shell.
 
-To create a Load Testing resource:
+#### Step 1 - Retrieve the Azure Service Bus Namespace (ASB) ConnectionString using shell
 
-1. Sign in to the [Azure portal](https://portal.azure.com) by using the credentials for your Azure subscription.
+Execute the following:
+```
+az login
+```
+Now execute  the following: 
+```
+# Set values for next 3 lines
+servicebus_namespace=[name of the azure service bus namespace previously created]
+rg_name=[name of the resource group previously created]
+subscription=[guid/id of the subscription holding the azure service bus namespace]
 
-2. Select the menu button in the upper-left corner of the portal, and then select + Create a resource.
+# This command will set the proper Azure context for your next commands
+az account set -s $subscription
+```
+> Note: if you don't know the id/guid of that subscription you can run "az account list" and identify the id in the returned list  
 
-![Create ALT resource - step 2](../../assets/create-resource.png)
 
-3. Use the search bar to find Azure Load Testing.
+Execute the following: 
+```
+# No need to set any value here. All values will be filled automatically by the commands themselves. 
+# Please just copy, paste and run the commands.
+ASB_URI="https://"$servicebus_namespace".servicebus.windows.net/"$ASB_QUEUE"/messages"
+SHARED_ACCESS_KEY_NAME="RootManageSharedAccessKey"
 
-4. Select Azure Load Testing.
+ConnectionString=$(az servicebus namespace authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --name $SHARED_ACCESS_KEY_NAME --query primaryConnectionString -o tsv)
+echo $ConnectionString
+```
 
-5. On the Azure Load Testing pane, select Create.
+#### Step 2 - Create a SAS Token from ASB Connection String - (based on https://docs.microsoft.com/en-us/rest/api/eventhub/generate-sas-token)
+> IMPORTANT: READ INSTRUCTIONS HERE BELOW CAREFULLY BEFORE PROCEEDING
 
-![Create ALT resource - step 6](../../assets/create-azure-load-testing.png)
+The returned value from the previous step (echo $ConnectionString) will/should be similar to:
 
-Provide the following information to configure your new Azure Load Testing resource:
+"Endpoint=sb://yourasbnamespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=**AAAtrhb6......pL26jYbAsY/Dv+akXuxwYQHwks6iE=**"
 
-| Field	            | Description   |
-| :---              | :---          |
-| Subscription	    | Select the Azure subscription that you want to use for this Azure Load Testing resource. |
-| Resource group	| Select an existing resource group. Or select Create new, and then enter a unique name for the new resource group. |
-| Name	            | Enter a unique name to identify your Azure Load Testing resource. The name can't contain special characters, such as \/""[]:|<>+=;,?*@&, or whitespace. The name can't begin with an underscore (_), and it can't end with a period (.) or a dash (-). The length must be 1 to 64 characters. 
-| Location	        | Select a geographic location to host your Azure Load Testing resource. |
+Get the value of SharedAccessKey from the returned ConnectionString (like the one in bold above)
+Use that value to fill the value of next variable (SHARED_ACCESS_KEY).
+Then execute the command in a shell in order to memorize the value in the shell context:
+```
+SHARED_ACCESS_KEY="[YourSharedAccessKey]"
+```
+> E.g.: </br>
+> Before -> SHARED_ACCESS_KEY="[YourSharedAccessKey]" </br>
+> After  ->  SHARED_ACCESS_KEY="AAAtrhb6......pL26jYbAsY/Dv+akXuxwYQHwks6iE="
 
-### Prepare the JMeter Script file (*.jmx) 
+Execute the following:
+```
+get_sas_token() {
+    local ASB_URI=$1
+    local SHARED_ACCESS_KEY_NAME=$2
+    local SHARED_ACCESS_KEY=$3
+    local EXPIRY=${EXPIRY:=$((60 * 60 * 5))} # Default token expiry is 5 hours
 
-1. Open the file "deploy/LvLUpAutoscalingLoadTest.jmx" with your preferred XML Editor. Note: Visual Studio Code will work.   
-> A jmx file is based on xml structure. 
-> Please feel free to save a copy of the jmx file in case you want to keep a copy of the original version 
+    local ENCODED_URI=$(echo -n $ASB_URI | jq -s -R -r @uri)
+    local TTL=$(($(date +%s) + $EXPIRY))
+    local UTF8_SIGNATURE=$(printf "%s\n%s" $ENCODED_URI $TTL | iconv -t UTF-8)
 
-2. 
+    local HASH=$(echo -n "$UTF8_SIGNATURE" | openssl sha256 -hmac $SHARED_ACCESS_KEY -binary | base64)
+    local ENCODED_HASH=$(echo -n $HASH | jq -s -R -r @uri)
+
+    echo -n "SharedAccessSignature sr=$ENCODED_URI&sig=$ENCODED_HASH&se=$TTL&skn=$SHARED_ACCESS_KEY_NAME"
+}
+
+sastoken=get_sas_token $ASB_URI  $SHARED_ACCESS_KEY_NAME $SHARED_ACCESS_KEY
+echo $sastoken
+```
+You will use the value of $sastoken to configure a secret in Azure key vault. </br>
+That secret will be used by the Azure Load Testing Test Run to connect to your Azure Service Bus service endpoint. More information later in this module.
+
+
+### Set the Azure Service Bus SharedAccessKey in an Azure Key Vault Secret
+
+Execute the following:
+```
+## provide subscription 
+subscription="[yoursubscriptionid]"
+
+# set the name of your azure key vault 
+azure_key_vault="[yourazurekeyvaultname]"
+
+# you can keep the name of the secret as-is since already referenced in the jmx
+secret="sastoken"
+
+# set the value here with the SAS token to hit the Azure Service Bus Endpoint 
+secretvalue="[SharedAccessSignature sr=https%3a%2f%2fyourasb.servicebus.windows.net]"
+```
+> Note: the value of secretvalue = $sastoken from previous paragraph
+
+Now execute the follwing
+```
+az login
+# this will set the secret expiration in 6 hours from current date/time
+expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 6 hours")
+
+az keyvault secret set --name $secret --vault-name $azure_key_vault --value $secretvalue --subscription $subscription --expires "$expiredate"
+```
+
+### Create a new Azure Load Testing Test instance 
+Execute the following to create a Test instance:
+```
+## provide subscription 
+subscription="[yoursubscriptionid]"
+
+## provide resource group (rg_name) where to Azure Load Testing is deployed 
+rg_name="[resource group]"
+
+## provide azure load testing resource name (alt)
+alt="[azure load testing instance name]"
+
+## provide a name for the load test instance that is going to be created. Default = "NewTest"
+testname="LvlUpNewTest"
+
+## set the value of the azure service bus endpoint uri - typically this is "asbnamespace.servicebus.windows.net"
+asb_endpoint_uri=[yourasburi]
+
+## provide a description for your test instance. Default = "Level Up Azure Load Testing Instance - Created on: " + current date/time
+testdate=$(date)
+testdescription="Level Up Azure Load Testing Instance - Created on: $testdate"
+```
+Now execute the following (just copy->paste->run in a shell):
+```
+## constant value - do not change unless instructed by trainer
+apiversion="api-version=2021-07-01-preview"
+
+## formatting resourceId string based on submitted variables 
+resourceId="/subscriptions/"$subscription"/resourcegroups/"$rg_name"/providers/microsoft.loadtestservice/loadtests/"$alt
+
+## formatting management endpoint url based on submitted variables 
+armEndpoint="https://management.azure.com"$resourceId"?$apiversion"
+
+az login 
+az account set -s $subscription
+
+# getAccessToken("https://management.core.windows.net");
+accessToken=$(az account get-access-token --resource "https://management.core.windows.net" --query accessToken -o tsv) 
+echo $accessToken
+
+hdr_authorization="Authorization: Bearer $accessToken"
+hdr_content_type="Content-Type: application/json"
+
+curl -G -H "$hdr_authorization" -H "contenttype" $armEndpoint
+
+dataPlaneURI=$(curl -G -H "$hdr_authorization" -H "$hdr_content_type" $armEndpoint | jq -r .properties.dataPlaneURI) 
+
+# utility function to create random guid
+uuid()
+{
+    local N B C='89ab'
+
+    for (( N=0; N < 16; ++N ))
+    do
+        B=$(( $RANDOM%256 ))
+
+        case $N in
+            6)
+                printf '4%x' $(( B%16 ))
+                ;;
+            8)
+                printf '%c%x' ${C:$RANDOM%${#C}:1} $(( B%16 ))
+                ;;
+            3 | 5 | 7 | 9)
+                printf '%02x-' $B
+                ;;
+            *)
+                printf '%02x' $B
+                ;;
+        esac
+    done
+
+    echo
+}
+
+## provide a label/name for the test 
+testId=$(uuid) # do not change
+
+# get access token for Azure Load Testing API endpoint
+accessToken=$(az account get-access-token --resource "https://loadtest.azure-dev.com" --query accessToken -o tsv) 
+echo $accessToken
+
+## Number of Instances to run the test
+EngineInstancesCount=1
+
+## you can set one or more Criteria - right now only response time and errors are supported
+passFailMetrics1Guid=$(uuid) 
+passFailMetrics2Guid=$(uuid) 
+
+#
+testJson=$(cat <<EOF
+{
+    "resourceId": "$resourceId",
+    "testId": "$testId",
+    "description": "$testdescription",
+    "displayName": "$testname",
+    "loadTestConfig": {
+        "engineSize": "m",
+        "engineInstances": $EngineInstancesCount
+    },
+    "secrets": {},
+    "environmentVariables": {
+        "endpoint_uri": "$asb_endpoint_uri"
+    },
+    "passFailCriteria": {
+        "passFailMetrics": {
+            "$passFailMetrics1Guid": {
+                "clientmetric": "response_time_ms",
+                "aggregate": "avg",
+                "condition": ">",
+                "value": 500,
+                "action": "continue",
+                "result": null,
+                "actualValue": 0
+            },
+            "$passFailMetrics2Guid": {
+                "clientmetric": "error",
+                "aggregate": "percentage",
+                "condition": ">",
+                "value": 30,
+                "action": "continue",
+                "result": null,
+                "actualValue": 0
+            }
+        }
+    }
+}
+EOF
+)
+
+body=$createTestJSON # | ConvertTo-Json -Compress | % { [System.Text.RegularExpressions.Regex]::Unescape($_) }
+
+hdr_authorization="Authorization: Bearer $accessToken"
+hdr_content_type="Content-Type: application/merge-patch+json"
+
+## set the Create Load Test API Endpoint URI 
+loadCreateTestURI="https://"$dataPlaneURI"/loadtests/"$testId"?$apiversion"
+loadCreateTestResponse=$(curl $loadCreateTestURI -X PATCH -H "$hdr_authorization" -H "$hdr_content_type" -d "$testJson")
+```
+Verify the value of previous step by printing the value of curl response:
+```
+echo $loadCreateTestResponse
+``` 
+The previous command should result in a json output with the properties of the Test instance just created.
+If you see an output and no error (or null) value you are ready to proceed with the following:
+```
+fileid=$(uuid)
+hdr_authorization="Authorization: Bearer $accessToken"
+validateUploadFileTestURI="https://$dataPlaneURI/file/$fileid:validate?"$apiversion
+
+## Please make sure to run the following from same command directory as the location of LvLUpAutoscalingLoadTest.jmx 
+## in order to let the -F file= parameter load the jmx content correctly
+validateUploadFileTestResponse=$(curl $validateUploadFileTestURI -w "%{http_code}" -H "$hdr_authorization" -F "file=@LvLUpAutoscalingLoadTest.jmx")
+RESPONSE_OK="200"
+if [[ "$validateUploadFileTestResponse" == *"$RESPONSE_OK"* ]]
+then 
+    echo -e "\n\n*** STATUS OK *** :-) --> File ID is available  OK to continue"
+else
+    echo -e "\n\n*** IMPORTANT *** :'-( ***: File ID validation failed - Stop Executing any further and verify the error"
+    echo -e "Status: "$validateUploadFileTestResponse
+fi
+
+## Now Upload the jmx to the test
+uploadFileTestURI="https://$dataPlaneURI/loadtests/$testId/files/$fileid?"$apiversion
+
+## Please make sure to run the following from same command directory as the location of LvLUpAutoscalingLoadTest.jmx 
+## in order to let the -F file= parameter load the jmx content correctly
+uploadFileTestURIResponse=$(curl $uploadFileTestURI -X PUT -w "%{http_code}" -H "$hdr_authorization" -F "file=@LvLUpAutoscalingLoadTest.jmx")
+RESPONSE_OK="201"
+if [[ "$uploadFileTestURIResponse" == *"$RESPONSE_OK"* || ]]
+then 
+    echo -e "\n\n*** STATUS OK *** :-) --> Jmx File Uploaded - OK to continue"
+else
+    echo -e "\n\n*** IMPORTANT *** :'-( ***: Jmx File Not Uploaded - Stop Executing any further and verify the error"
+    echo -e "Status: "$uploadFileTestURIResponse
+fi
+
+```
 
 
 
