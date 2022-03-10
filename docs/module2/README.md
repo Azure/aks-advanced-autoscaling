@@ -1,5 +1,7 @@
 # Welcome to: Module 2: Application Deployment and Testing with Azure Load Testing
+The output of this lab be this diagram:
 
+![Architecture diagram](images/AutoscalingLab.png)
 ### Install KEDA
 
 * Execute the following
