@@ -224,8 +224,8 @@ No need to change the following. Please just copy, paste, run until the end of s
 ```
 secret_name=sastoken
 
-# this will set the secret expiration in 6 hours from current date/time
-expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 6 hours")
+# this will set the secret expiration in 8 hours from current date/time
+expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
 
 az keyvault secret set --name $secret --vault-name $azure_key_vault --value $secretvalue --subscription $subscription --expires "$expiredate"
 
