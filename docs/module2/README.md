@@ -382,9 +382,15 @@ else
 fi
 
 ### END - SOME FINAL CHECKS
-
-### You can also check in the Azure portal that the Test is present and configured correctly (refer to README)
 ```
+If the commands did run correctly you should see in the portal a Test configuration like this:
+![Azure Load Testing - Test instance](images/ALT%20-%20Test%20instance%20created.png)
+
+Click on the Test instance shown on the list ("LvlUpNewTest") to configure or review the instance:
+![Azure Load Testing - Configure/Review instance](images/Configure%20or%20Review%20Test%20instance.png)
+
+
+
 
 
 
