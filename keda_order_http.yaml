@@ -8,17 +8,17 @@ spec:
     name: order-web
   pollingInterval: 1 # Optional. Default: 30 seconds
   cooldownPeriod:  1 # Optional. Default: 300 seconds
-  maxReplicaCount: 5
+  maxReplicaCount: 8
   minReplicaCount: 1
   advanced:                                          # Optional. Section to specify advanced options
     horizontalPodAutoscalerConfig:                   # Optional. Section to specify HPA related options
       behavior:                                      # Optional. Use to modify HPA's scaling behavior
         scaleDown:
-          stabilizationWindowSeconds: 10
+          stabilizationWindowSeconds: 120
           policies:
           - type: Percent
             value: 50
-            periodSeconds: 5
+            periodSeconds: 60
   triggers:
   - type: prometheus
     metadata:
