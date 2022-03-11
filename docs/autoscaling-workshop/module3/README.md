@@ -1,51 +1,60 @@
-# Instructions
+# AKS Burst Scaling with Azure Container Instances (ACI) / Virtual Nodes
 
-## Pre-requisites
+**Architecture Diagram**
 
-- Completion of Module 1 and 2
+![Burst to Azure Container Instances](/images/AKS-ACI.png)
 
-### Enable virtual node add on
+**ACI Benefits**
 
-* Execute the following
+* Rapidly scale your AKS cluster
+* Pay per second
+* No additional infrastructure overhead
+* Application requires no modification to use virtual nodes
+* Keda integration - Scaling in virtual nodes automatically to zero, when pods no longer needed
 
-```cli
+**ACI Limitations**
 
-az provider register --namespace Microsoft.ContainerInstance
-az aks enable-addons \
-    --name <aks-cluster-name> \
-    --addons virtual-node \
-    --subnet-name <aci-subnet-name>
+* Virtual nodes only work with AKS clusters created using advanced networking (Azure CNI)
+* Linux pods only
+* DaemonSets will not deploy pods to the virtual nodes
+* Using service principal to pull ACR images
 
+## Pod Spec for ACI Deployment
+**Only on ACI**
+
+```yaml
+tolerations:
+      - key: virtual-kubelet.io/provider
+        operator: Exists
+      - key: azure.com/aci
+        effect: NoSchedule
+nodeSelector:
+        kubernetes.io/role: agent
+        beta.kubernetes.io/os: linux
+        type: virtual-kubelet
 ```
 
-### Deploying updated demo app
+**On ACI after using VM’s**
 
-* Execute the following
-
-```cli
-
-cd module3
-
-kubectl apply -f deploy/deploy-app.yaml --namespace $demo_app_namespace
-
-kubectl get pod -n $demo_app_namespace -o wide
-
+```yaml
+tolerations:
+      - key: virtual-kubelet.io/provider
+        operator: Exists
+      - key: azure.com/aci
+        effect: NoSchedule
+affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: type
+            operator: NotIn
+            values:
+            - virtual-kubelet
 ```
 
-### setting up and running order generator
+## Module 3 Lab Instructions
 
-* Execute the following
+[INSTRUCTIONS](/INSTRUCTIONS.md)
 
-```powershell
-
-`dotnet run --project .\src\Keda.Samples.Dotnet.OrderGenerator\Keda.Samples.Dotnet.OrderGenerator.csproj`
-
-* When prompted: "Let's queue some orders, how many do you want?" enter `300` 
-
-```
-
-```cli
-
-watch kubectl get pod -n $demo_app_namespace -o wide
-
-```
