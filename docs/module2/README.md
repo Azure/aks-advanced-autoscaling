@@ -186,6 +186,7 @@ asb_uri="https://"$servicebus_namespace".servicebus.windows.net/"$asb_queue"/mes
 asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $asb_queue_key_name --query primaryKey -o tsv)
 echo $asb_queue_primary_key
 
+# Function to build a valid SAS token. Reference: https://docs.microsoft.com/en-us/rest/api/eventhub/generate-sas-token
 get_sas_token() {
     local ASB_URI=$1
     local SHARED_ACCESS_KEY_NAME=$2
