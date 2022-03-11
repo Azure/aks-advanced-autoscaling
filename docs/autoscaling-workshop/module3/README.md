@@ -2,7 +2,7 @@
 
 **Architecture Diagram**
 
-![Burst to Azure Container Instances](/images/AKS-ACI.png)
+![Burst to Azure Container Instances](/docs/autoscaling-workshop/module3/images/AKS-ACI.png)
 
 **ACI Benefits**
 
