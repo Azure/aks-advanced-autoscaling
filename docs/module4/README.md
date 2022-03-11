@@ -21,7 +21,7 @@ kubectl get pods -n kube-system --selector app.kubernetes.io/name=openservicemes
 kubectl get services -n kube-system --selector app.kubernetes.io/name=openservicemesh.io
 
 ```
-!(images/picture01.png)
+![picture](images/picture01.png)
 ### Installing Prometheus via helm chart kube-prometheus-stack
 
 * Execute the following
