@@ -21,6 +21,12 @@ kubectl create namespace keda
 helm install keda kedacore/keda --namespace keda
 ```
 
+* Check keda is running
+```
+kubectl get pods -n keda
+```
+![kedarunning](images/pods-keda-picture.png)
+
 ### Creating a new Azure Service Bus namespace & queue
 
 * Execute the following
