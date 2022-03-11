@@ -41,7 +41,7 @@ prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/
 kubectl --namespace monitoring get pods -l "release=prometheus"
 
 ```
-![Picture02.png]
+![picture](images/picture02.png)
 
 ### Disabled metrics scapping from components that AKS don't expose.
 
@@ -70,7 +70,7 @@ sleep 5s
 osm version
 
 ```
-![Picture03.png]
+![picture](images/picture03.png)
 ### Adding namespace to mesh and enabling OSM metrics
 
 * Execute the following
@@ -83,14 +83,14 @@ sleep 5s
 kubectl rollout restart deployment order-web -n order-portal
 
 ```
-![Picture04.png]
+![picture](images/picture04.png)
 ### Portforward Prometheus in another new terminal and open http://localhost:9090 :
 ```
 kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090 &
 ```
 
 ### Query to run in Prometheus to pull http metrics:
-![Picture05.png]
+![picture](images/picture05.png)
 ```
 envoy_cluster_upstream_rq_xx{envoy_response_code_class="2"}
 
@@ -106,7 +106,7 @@ helm install mycontour bitnami/contour --namespace projectcontour --create-names
 
 kubectl -n projectcontour get po,svc
 ```
-![Picture06.png]
+![picture](images/picture06.png)
 ### Create HTTPProxy and ingressBackend for Order-web application
 #### Get the public/External IP of the Azure loadbalancer created for the Contour Services
 ```
@@ -149,17 +149,17 @@ spec:
 EOF
 
 ```
-![Picture07.png]
+![picture](images/picture07.png)
 ### Create KEDA ScaledObject based on Query
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/keda_order_http.yaml
 ```
 
-![Picture08.png]
+![picture](images/picture08.png)
 ### Watch the pods been created:
 
 ```
 kubectl get pods -n order-portal -w
 ```
-![Picture09.png]
+![picture](images/picture09.png)
