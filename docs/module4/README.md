@@ -107,6 +107,7 @@ helm repo update
 helm install mycontour bitnami/contour --namespace projectcontour --create-namespace
 sleep 10s
 kubectl -n projectcontour get po,svc
+
 ```
 ![picture](images/picture06.png)
 ### Create HTTPProxy and ingressBackend for Order-web application
