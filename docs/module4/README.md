@@ -66,7 +66,7 @@ OSM_VERSION=v1.0.0
 curl -sL "https://github.com/openservicemesh/osm/releases/download/$OSM_VERSION/osm-$OSM_VERSION-linux-amd64.tar.gz" | tar -vxzf -
 sudo mv ./linux-amd64/osm /usr/local/bin/osm
 sudo chmod +x /usr/local/bin/osm
-sleep 5s
+sleep 10s
 osm version
 
 ```
