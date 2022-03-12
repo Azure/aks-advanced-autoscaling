@@ -80,9 +80,8 @@ kubectl apply -f deploy/deploy-autoscaling.yaml --namespace $demo_app_namespace
 
 kubectl get hpa -n $demo_app_namespace -o wide 
 
---Take a look at the HPA state before proceeding to the next step.
-
 ```
+* Take a look at the HPA state before proceeding to the next step.
 * Alternative the following:
 
 ```
@@ -92,9 +91,9 @@ kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscalin
 
 kubectl get hpa -n $demo_app_namespace -o wide 
 
---Take a look at the HPA state before proceeding to the next step.
-
 ```
+* Take a look at the HPA state before proceeding to the next step.
+
 ### Deploying Keda scaledobject
 
 * Execute the following
