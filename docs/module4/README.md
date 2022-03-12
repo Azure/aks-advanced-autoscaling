@@ -81,6 +81,8 @@ osm namespace add order-portal order-processor
 osm metrics enable --namespace "order-portal, order-processor"
 sleep 5s
 kubectl rollout restart deployment order-web -n order-portal
+kubectl get pods -n <osm-mesh-namespace> -l app=osm-controller
+kubectl get pods -n kube-system -l app=osm-controller
 
 ```
 ![picture](images/picture04.png)
