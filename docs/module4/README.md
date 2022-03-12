@@ -67,7 +67,7 @@ curl -sL "https://github.com/openservicemesh/osm/releases/download/$OSM_VERSION/
 sudo mv ./linux-amd64/osm /usr/local/bin/osm
 sudo chmod +x /usr/local/bin/osm
 sleep 10s
-osm version
+osm version --osm-namespace kube-system
 
 ```
 ![picture](images/picture03.png)
