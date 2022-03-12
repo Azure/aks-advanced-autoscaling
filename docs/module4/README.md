@@ -170,9 +170,23 @@ kubectl get pods -n order-portal -w
 ```
 ![picture](images/picture09.png)
 
-### Now navigate to your Azure Load Testing and create a new test with the file below:
+### Now navigate to your Azure Load Testing and add RBAC role of "Load Test Owner" to yourself:
 
-* Download the file below
+![picture](images/picture09.png)
+### Create a new test with the file below:
+
+* Download this file and in line 40 replace the "your-ip-dns" with the value of your env. variable $myip_dns 
 [jmxloadtest](deploy/LvLUpAutoscalingLoadTest.jmx)
+![picture](images/picture10.png)
 
+* Now navigate to your Azure Load Testing and hit Create under "Create a new test". Next name the load test and click on the tab "Test Tab" to upload your jmx file:
+![picture](images/picture11.png)
 
+* Next hit the "Test criteria" and add the "Response time" and "Error" metrics like the photo below:
+![picture](images/picture12.png)
+
+* Now hit "Review + create"
+
+### Watch the metrics and the terminal with the pods
+![picture](images/picture13.png)
+![picture](images/picture14.png)
