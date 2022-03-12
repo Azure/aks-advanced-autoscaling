@@ -100,12 +100,12 @@ envoy_cluster_upstream_rq_xx{envoy_response_code_class="2"}
 
 ### Installing Contour in AKS:
 
-[link](https://projectcontour.io/getting-started/#option-2-helm)
+[reference](https://projectcontour.io/getting-started/#option-2-helm)
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 helm install mycontour bitnami/contour --namespace projectcontour --create-namespace
-
+sleep 10s
 kubectl -n projectcontour get po,svc
 ```
 ![picture](images/picture06.png)
