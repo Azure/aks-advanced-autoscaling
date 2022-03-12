@@ -88,7 +88,7 @@ kubectl get pods -n kube-system -l app=osm-controller
 ![picture](images/picture04.png)
 ### Portforward Prometheus in another new terminal and open http://localhost:9090 :
 ```
-kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090 &
+nohup kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090 &
 ```
 
 ### Query to run in Prometheus to pull http metrics:
