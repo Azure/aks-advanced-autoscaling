@@ -151,12 +151,15 @@ spec:
     name: mycontour-envoy
 EOF
 
+sleep 5s
+kubectl get httpproxy,ingressbackend -n order-portal
+
 ```
 ![picture](images/picture07.png)
 ### Create KEDA ScaledObject based on Query
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/keda_order_http.yaml
+kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/docs/module4/deploy/keda_order_http.yaml
 ```
 
 ![picture](images/picture08.png)
