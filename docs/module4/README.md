@@ -169,3 +169,10 @@ kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscalin
 kubectl get pods -n order-portal -w
 ```
 ![picture](images/picture09.png)
+
+### Now navigate to your Azure Load Testing and create a new test with the file below:
+
+* Download the file below
+[jmxloadtest](deploy/LvLUpAutoscalingLoadTest.jmx)
+
+
