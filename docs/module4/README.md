@@ -163,12 +163,11 @@ kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscalin
 ```
 
 ![picture](images/picture08.png)
-### Watch the pods been created:
+### For watching the pods been created:
 
 ```
 kubectl get pods -n order-portal -w
 ```
-![picture](images/picture09.png)
 
 ### Now navigate to your Azure Load Testing and add RBAC role of "Load Test Owner" to yourself:
 
