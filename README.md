@@ -26,9 +26,9 @@ In order to make this LevelUP run as smoothly as possible, please install [Prere
 
 * Module 2 [Application Deployment and Testing with Azure Load Testing](docs/module2/README.md)
 
-* Module 3 [Burst scaling with Azure Container Instances](docs/module4/README.md)
+* Module 3 Burst scaling with Azure Container Instances
 
-* Module 4 Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
+* Module 4 [Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing](docs/module4/README.md)
 
 ## Contributing
 

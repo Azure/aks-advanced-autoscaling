@@ -21,7 +21,7 @@ kubectl get pods -n kube-system --selector app.kubernetes.io/name=openservicemes
 kubectl get services -n kube-system --selector app.kubernetes.io/name=openservicemesh.io
 
 ```
-![images/Picture01.png]
+![picture](images/picture01.png)
 ### Installing Prometheus via helm chart kube-prometheus-stack
 
 * Execute the following
@@ -30,7 +30,7 @@ kubectl get services -n kube-system --selector app.kubernetes.io/name=openservic
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 helm install prometheus \
-prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/byo_values.yaml \
+prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/docs/module4/deploy/byo_values.yaml \
 --namespace monitoring \
 --create-namespace
 
@@ -41,7 +41,7 @@ prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/
 kubectl --namespace monitoring get pods -l "release=prometheus"
 
 ```
-![Picture02.png]
+![picture](images/picture02.png)
 
 ### Disabled metrics scapping from components that AKS don't expose.
 
@@ -49,7 +49,7 @@ kubectl --namespace monitoring get pods -l "release=prometheus"
 
 ```
 helm upgrade prometheus \
-prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/byo_values.yaml \
+prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/docs/module4/deploy/byo_values.yaml \
 --namespace monitoring \
 --set kubeEtcd.enabled=false \
 --set kubeControllerManager.enabled=false \
@@ -66,11 +66,11 @@ OSM_VERSION=v1.0.0
 curl -sL "https://github.com/openservicemesh/osm/releases/download/$OSM_VERSION/osm-$OSM_VERSION-linux-amd64.tar.gz" | tar -vxzf -
 sudo mv ./linux-amd64/osm /usr/local/bin/osm
 sudo chmod +x /usr/local/bin/osm
-sleep 5s
-osm version
+sleep 10s
+osm version --osm-namespace kube-system
 
 ```
-![Picture03.png]
+![picture](images/picture03.png)
 ### Adding namespace to mesh and enabling OSM metrics
 
 * Execute the following
@@ -81,16 +81,18 @@ osm namespace add order-portal order-processor
 osm metrics enable --namespace "order-portal, order-processor"
 sleep 5s
 kubectl rollout restart deployment order-web -n order-portal
+kubectl get pods -n <osm-mesh-namespace> -l app=osm-controller
+kubectl get pods -n kube-system -l app=osm-controller
 
 ```
-![Picture04.png]
+![picture](images/picture04.png)
 ### Portforward Prometheus in another new terminal and open http://localhost:9090 :
 ```
-kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090 &
+nohup kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090 &
 ```
 
 ### Query to run in Prometheus to pull http metrics:
-![Picture05.png]
+![picture](images/picture05.png)
 ```
 envoy_cluster_upstream_rq_xx{envoy_response_code_class="2"}
 
@@ -98,15 +100,16 @@ envoy_cluster_upstream_rq_xx{envoy_response_code_class="2"}
 
 ### Installing Contour in AKS:
 
-[link](https://projectcontour.io/getting-started/#option-2-helm)
+[reference](https://projectcontour.io/getting-started/#option-2-helm)
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 helm install mycontour bitnami/contour --namespace projectcontour --create-namespace
-
+sleep 10s
 kubectl -n projectcontour get po,svc
+
 ```
-![Picture06.png]
+![picture](images/picture06.png)
 ### Create HTTPProxy and ingressBackend for Order-web application
 #### Get the public/External IP of the Azure loadbalancer created for the Contour Services
 ```
@@ -148,18 +151,28 @@ spec:
     name: mycontour-envoy
 EOF
 
+sleep 5s
+kubectl get httpproxy,ingressbackend -n order-portal
+
 ```
-![Picture07.png]
+![picture](images/picture07.png)
 ### Create KEDA ScaledObject based on Query
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/keda_order_http.yaml
+kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/docs/module4/deploy/keda_order_http.yaml
 ```
 
-![Picture08.png]
+![picture](images/picture08.png)
 ### Watch the pods been created:
 
 ```
 kubectl get pods -n order-portal -w
 ```
-![Picture09.png]
+![picture](images/picture09.png)
+
+### Now navigate to your Azure Load Testing and create a new test with the file below:
+
+* Download the file below
+[jmxloadtest](deploy/LvLUpAutoscalingLoadTest.jmx)
+
+
