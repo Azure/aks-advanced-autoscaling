@@ -215,7 +215,7 @@ secret_name="sastoken"
 # this will set the secret expiration in 8 hours from current date/time
 expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
 
-az keyvault secret set --name $secret --vault-name $azure_key_vault --value "$secretvalue" --subscription $subscription --expires "$expiredate"
+az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value "$secretvalue" --subscription $subscription --expires "$expiredate"
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
 $secret_uri
