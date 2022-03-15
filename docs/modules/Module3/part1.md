@@ -5,7 +5,6 @@ has_children: false
 nav_order: 2
 ---
 
-
 # Burst Scaling with Azure Container Instances (ACI) / Virtual Nodes
 
 **Architecture Diagram**
