@@ -364,7 +364,6 @@ Feel free to perform some final checks with the following commands:
 ```
 ### BEGIN - SOME FINAL CHECKS
 
-## Note: the next want to confirm that the Test creation went well - you can run the following commands:
 ## Let's verify that we got a http code 200 = OK for the Test File upload validation
 RESPONSE_OK="200"
 if [[ "$validateUploadFileTestResponse" == *"$RESPONSE_OK"* ]]
@@ -377,7 +376,7 @@ fi
 
 ## Let's verify that we got a http code 201 = OK for the Test creation
 RESPONSE_OK="201"
-if [[ "$uploadFileTestURIResponse" == *"$RESPONSE_OK"* || ]]
+if [[ "$uploadFileTestURIResponse" == *"$RESPONSE_OK"* ]]
 then 
     echo -e "\n\n*** STATUS OK *** :-) --> Jmx File Uploaded - OK to continue"
 else
