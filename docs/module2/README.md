@@ -137,12 +137,12 @@ kubectl get pod -n $demo_web_namespace -w
 
 ```cli
 
-monitor_authorization_rule_name=keda-monitor-send
-az servicebus queue authorization-rule create --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --rights Listen Send
+monitor_authorization_rule_name=alt-send
+az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --rights Listen Send
 
-MONITOR_CONNECTION_STRING=$(az servicebus queue authorization-rule keys list --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
+asb_connectionstring4alt=$(az servicebus queue authorization-rule keys list --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
 
-echo $MONITOR_CONNECTION_STRING 
+echo $asb_connectionstring4alt 
 ```
 #### Publishing messages to the queue
 
@@ -184,7 +184,7 @@ Now let's execute all the commands:
 az login
 az account set -s $subscription 
 asb_queue=orders 
-asb_queue_key_name=keda-monitor-send
+asb_queue_key_name=alt-send
 
 asb_uri="https://"$servicebus_namespace".servicebus.windows.net/"$asb_queue"/messages"
 asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $asb_queue --name $asb_queue_key_name --query primaryKey -o tsv)
