@@ -189,7 +189,7 @@ asb_queue=orders
 asb_queue_key_name=keda-monitor-send
 
 asb_uri="https://"$servicebus_namespace".servicebus.windows.net/"$asb_queue"/messages"
-asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $asb_queue_key_name --query primaryKey -o tsv)
+asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $asb_queue --name $asb_queue_key_name --query primaryKey -o tsv)
 echo $asb_queue_primary_key
 
 # Function to build a valid SAS token. Reference: https://docs.microsoft.com/en-us/rest/api/eventhub/generate-sas-token
@@ -217,7 +217,7 @@ secret_name="sastoken"
 # this will set the secret expiration in 8 hours from current date/time
 expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
 
-az keyvault secret set --name $secret --vault-name $azure_key_vault --value $secretvalue --subscription $subscription --expires "$expiredate"
+az keyvault secret set --name $secret --vault-name $azure_key_vault --value "$secretvalue" --subscription $subscription --expires "$expiredate"
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
 $secret_uri
