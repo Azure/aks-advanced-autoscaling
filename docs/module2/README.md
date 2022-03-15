@@ -34,7 +34,7 @@ kubectl get pods -n keda
 ```cli
 servicebus_namespace=[servicebus namespace as created in Module 1]
 
-## [queue_name as created in Module 1] 
+## [queue_name as created in Module 1 - no need to modify] 
 queue_name=orders
 
 authorization_rule_name=order-consumer
