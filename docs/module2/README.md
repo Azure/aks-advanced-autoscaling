@@ -32,8 +32,7 @@ kubectl get pods -n keda
 * Execute the following
 
 ```cli
-project_name=servicebus
-servicebus_namespace=$project_name
+servicebus_namespace=[servicebus namespace as created in Module 1]
 
 ```
 > Need to discuss if we still need the following since it should be included already in Module 1 
