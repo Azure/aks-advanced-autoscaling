@@ -4,13 +4,20 @@ The output of this lab be this diagram:
 ![Architecture diagram](images/AutoscalingLab.png)
 ### Install KEDA
 
-* Execute the following
+* Execute the following:
 
 ```
+### BEGIN - SETTING VARIABLES 
 
-rg_name=[name of rg created in module 1]
-akscluster_name=[name of aks cluster created in module 1]
+rg_name=[name of resource group as created in module 1]
+servicebus_namespace=[servicebus namespace as created in Module 1]
 
+### END - SETTING VARIABLES
+```
+* Please execute the following script:
+```
+## [aks as created in Module 1 - no need to change]
+akscluster_name=akscluster 
 
 helm repo add kedacore https://kedacore.github.io/charts
 helm repo update
@@ -32,16 +39,9 @@ kubectl get pods -n keda
 * Execute the following
 
 ```cli
-project_name=servicebus
-servicebus_namespace=$project_name
-
-```
-> Need to discuss if we still need the following since it should be included already in Module 1 
-az servicebus namespace create --name $servicebus_namespace -g $rg_name --sku basic
-
+## [queue_name as created in Module 1 - no need to modify] 
 queue_name=orders
-az servicebus queue create -g $rg_name --namespace-name $servicebus_namespace --name $queue_name
-```
+
 authorization_rule_name=order-consumer
 az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --rights Listen
 
@@ -64,7 +64,6 @@ demo_web_namespace=order-portal
 kubectl create namespace $demo_web_namespace
 
 kubectl create secret generic order-consumer-secret --from-literal=queue-connection-string=$monitor_connection_string -n $demo_web_namespace
-
 
 ```
 
@@ -132,20 +131,18 @@ kubectl get pod -n $demo_web_namespace -w
 
 ```
 
-### Optional and to be replace by ALT configuration 
-
 #### Setting up and running service bus
 
 * Execute the following
 
 ```cli
 
-monitor_authorization_rule_name=keda-monitor-send
-az servicebus queue authorization-rule create --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --rights Listen Send
+monitor_authorization_rule_name=alt-send
+az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --rights Listen Send
 
-MONITOR_CONNECTION_STRING=$(az servicebus queue authorization-rule keys list --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
+asb_connectionstring4alt=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
 
-echo $MONITOR_CONNECTION_STRING 
+echo $asb_connectionstring4alt 
 ```
 #### Publishing messages to the queue
 
@@ -187,10 +184,10 @@ Now let's execute all the commands:
 az login
 az account set -s $subscription 
 asb_queue=orders 
-asb_queue_key_name=keda-monitor-send
+asb_queue_key_name=alt-send
 
 asb_uri="https://"$servicebus_namespace".servicebus.windows.net/"$asb_queue"/messages"
-asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $asb_queue_key_name --query primaryKey -o tsv)
+asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $asb_queue --name $asb_queue_key_name --query primaryKey -o tsv)
 echo $asb_queue_primary_key
 
 # Function to build a valid SAS token. Reference: https://docs.microsoft.com/en-us/rest/api/eventhub/generate-sas-token
@@ -218,7 +215,7 @@ secret_name="sastoken"
 # this will set the secret expiration in 8 hours from current date/time
 expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
 
-az keyvault secret set --name $secret --vault-name $azure_key_vault --value $secretvalue --subscription $subscription --expires "$expiredate"
+az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value "$secretvalue" --subscription $subscription --expires "$expiredate"
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
 $secret_uri
@@ -367,7 +364,6 @@ Feel free to perform some final checks with the following commands:
 ```
 ### BEGIN - SOME FINAL CHECKS
 
-## Note: the next want to confirm that the Test creation went well - you can run the following commands:
 ## Let's verify that we got a http code 200 = OK for the Test File upload validation
 RESPONSE_OK="200"
 if [[ "$validateUploadFileTestResponse" == *"$RESPONSE_OK"* ]]
@@ -380,7 +376,7 @@ fi
 
 ## Let's verify that we got a http code 201 = OK for the Test creation
 RESPONSE_OK="201"
-if [[ "$uploadFileTestURIResponse" == *"$RESPONSE_OK"* || ]]
+if [[ "$uploadFileTestURIResponse" == *"$RESPONSE_OK"* ]]
 then 
     echo -e "\n\n*** STATUS OK *** :-) --> Jmx File Uploaded - OK to continue"
 else
