@@ -131,8 +131,6 @@ kubectl get pod -n $demo_web_namespace -w
 
 ```
 
-### Optional and to be replace by ALT configuration 
-
 #### Setting up and running service bus
 
 * Execute the following
