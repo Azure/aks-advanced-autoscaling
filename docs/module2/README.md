@@ -7,10 +7,15 @@ The output of this lab be this diagram:
 * Execute the following
 
 ```
+### BEGIN - SETTING VARIABLES 
 
-rg_name=[name of rg created in module 1]
-akscluster_name=[name of aks cluster created in module 1]
+rg_name=[name of resource group as created in module 1]
+servicebus_namespace=[servicebus namespace as created in Module 1]
 
+### END - SETTING VARIABLES
+
+## [aks as created in Module 1 - no need to change]
+akscluster_name=akscluster 
 
 helm repo add kedacore https://kedacore.github.io/charts
 helm repo update
@@ -32,8 +37,6 @@ kubectl get pods -n keda
 * Execute the following
 
 ```cli
-servicebus_namespace=[servicebus namespace as created in Module 1]
-
 ## [queue_name as created in Module 1 - no need to modify] 
 queue_name=orders
 
