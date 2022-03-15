@@ -365,8 +365,8 @@ Feel free to perform some final checks with the following commands:
 ### BEGIN - SOME FINAL CHECKS
 
 ## Let's verify that we got a http code 200 = OK for the Test File upload validation
-RESPONSE_OK="200"
-if [[ "$validateUploadFileTestResponse" == *"$RESPONSE_OK"* ]]
+RESPONSE_200_OK="200"
+if [[ "$validateUploadFileTestResponse" == *"$RESPONSE_200_OK"* ]]
 then 
     echo -e "\n\n*** STATUS OK *** :-) --> File ID is available  OK to continue"
 else
@@ -375,14 +375,15 @@ else
 fi
 
 ## Let's verify that we got a http code 201 = OK for the Test creation
-RESPONSE_OK="201"
-if [[ "$uploadFileTestURIResponse" == *"$RESPONSE_OK"* ]]
+RESPONSE_201_OK="201"
+if [[ "$uploadFileTestURIResponse" == *"$RESPONSE_201_OK"* ]]
 then 
     echo -e "\n\n*** STATUS OK *** :-) --> Jmx File Uploaded - OK to continue"
 else
     echo -e "\n\n*** IMPORTANT *** :'-( ***: Jmx File Not Uploaded - Stop Executing any further and verify the error"
     echo -e "Status: "$uploadFileTestURIResponse
 fi
+
 
 ### END - SOME FINAL CHECKS
 ```
