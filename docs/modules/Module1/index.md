@@ -1,8 +1,10 @@
 # Module 1 - Deploying AKS and Azure Services
 
-To deploy the infrastructure for this exercise there are 2 options below. Use the following parameter references when deploying infrastructure:
+## Deploy Infrastructure
 
-#### Parameters
+To deploy the infrastructure for this workshop you can choose from one of the two options below.  Use the following parameter references when deploying infrastructure:
+
+#### Parameters Reference
 
 Parameter Name | Description 
 -------------- | ----------- 
@@ -12,7 +14,7 @@ Parameter Name | Description
  location | this parameter is the azure datacenter that the resource group and resources will be created in - with the exception of the azure load testing resource which is further limited.  the allowed values for this parameter are datacenters that support aks 
  loadTestingLocation | the datacenter for load testing - allowed values are datacenters that support the load testing resource 
 
-## Option 1
+### Option 1 - Deploy using button
 
 Click this button and provide the parameters in the portal - see parameters below for an explanation of the template parameters
 
@@ -26,9 +28,8 @@ Click this button and provide the parameters in the portal - see parameters belo
         
 * this would require you to have the bicep cli installed on your machine [Install bicep tools](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 
-## Option 2
+### Option 2 - Deploy using CLI
 you can [clone the repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) and use az powershell or az cli to deploy the bicep template from your local machine.
 you must have the proper cli and or powershell 
 [Install Azure CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#azure-cli)
 [Install Azure Powershell](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#azure-powershell)
-
