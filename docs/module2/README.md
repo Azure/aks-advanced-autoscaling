@@ -60,7 +60,6 @@ kubectl create namespace $demo_web_namespace
 
 kubectl create secret generic order-consumer-secret --from-literal=queue-connection-string=$monitor_connection_string -n $demo_web_namespace
 
-
 ```
 
 ### Deploying order processor app and Keda scaledobject
