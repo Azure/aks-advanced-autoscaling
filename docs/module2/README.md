@@ -21,6 +21,12 @@ kubectl create namespace keda
 helm install keda kedacore/keda --namespace keda
 ```
 
+* Check keda is running
+```
+kubectl get pods -n keda
+```
+![kedarunning](images/pods-keda-picture.png)
+
 ### Creating a new Azure Service Bus namespace & queue
 
 * Execute the following
@@ -62,7 +68,7 @@ kubectl create secret generic order-consumer-secret --from-literal=queue-connect
 
 ```
 
-### Deploying order processor app
+### Deploying order processor app and Keda scaledobject
 
 * Execute the following
 
@@ -72,10 +78,6 @@ kubectl apply -f deploy/deploy-app.yaml --namespace $demo_app_namespace
 
 kubectl apply -f deploy/deploy-autoscaling.yaml --namespace $demo_app_namespace
 
-kubectl get hpa -n $demo_app_namespace -o wide 
-
---Take a look at the HPA state before proceeding to the next step.
-
 ```
 * Alternative the following:
 
@@ -84,20 +86,25 @@ kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscalin
 
 kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module2/docs/module2/deploy/deploy-autoscaling.yaml -n $demo_app_namespace
 
-kubectl get hpa -n $demo_app_namespace -o wide 
+```
 
---Take a look at the HPA state before proceeding to the next step.
+* Take a look at the HPA state and ScaledObject before proceeding to the next step.
+```
+kubectl get hpa -n $demo_app_namespace -o wide
+kubectl get so -n $demo_app_namespace -o wide
+kubectl get deployments --namespace $demo_app_namespace -o wide
 
 ```
-### Deploying Keda scaledobject
+![hparunning](images/hpa-picture.png)
+
+
+### Looking into the details of Keda scaledobject
 
 * Execute the following
 
 ```cli
 
 kubectl describe scaledobject order-processor-scaler -n $demo_app_namespace
-
-kubectl get deployments --namespace $demo_app_namespace -o wide
 
 ```
 
