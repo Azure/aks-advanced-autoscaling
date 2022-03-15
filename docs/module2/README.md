@@ -140,7 +140,7 @@ kubectl get pod -n $demo_web_namespace -w
 monitor_authorization_rule_name=alt-send
 az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --rights Listen Send
 
-asb_connectionstring4alt=$(az servicebus queue authorization-rule keys list --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
+asb_connectionstring4alt=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
 
 echo $asb_connectionstring4alt 
 ```
