@@ -4,7 +4,7 @@ The output of this lab be this diagram:
 ![Architecture diagram](images/AutoscalingLab.png)
 ### Install KEDA
 
-* Execute the following
+* Execute the following:
 
 ```
 ### BEGIN - SETTING VARIABLES 
@@ -13,7 +13,9 @@ rg_name=[name of resource group as created in module 1]
 servicebus_namespace=[servicebus namespace as created in Module 1]
 
 ### END - SETTING VARIABLES
-
+```
+* Please execute the following script:
+```
 ## [aks as created in Module 1 - no need to change]
 akscluster_name=akscluster 
 
