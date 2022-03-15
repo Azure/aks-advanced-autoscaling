@@ -7,13 +7,13 @@
 ## load the jmx content correctly (use cd to set your command directory) </br>
 
 ### *** BEGIN - SETTING ALL VARIABLES
-
+directory_of_LvLUpAutoscalingLoadTestjmx="[cd path of LvLUpAutoscalingLoadTest.jmx]"
 subscription=[your subscription id used in Module 1]
 rg_name=[name of resource group created in Module 1]
 servicebus_namespace=[name of your azure service bus namespace]  
 azure_key_vault=[your azure key vault name created in Module 1]
 alt=[your azure load testing instance name created in Module 1]
-## set the value of the azure service bus endpoint uri - typically this is "asbnamespace.servicebus.windows.net"
+## set the value of the azure service bus endpoint uri to test - e.g.: "asbnamespace.servicebus.windows.net" - no http(s) prefix
 asb_endpoint_uri=[your asb uri]
 
 ### *** END - SETTING ALL VARIABLES
@@ -21,13 +21,14 @@ asb_endpoint_uri=[your asb uri]
 ### BEGIN - SCRIPT EXECUTION - copy, paste, run
 
 # Unless you are already logged in, 'az login'  will open a browser window to let you authenticate. Once authenticated, the script will continue running 
+cd "$directory_of_LvLUpAutoscalingLoadTestjmx"
 az login
 az account set -s $subscription 
 asb_queue=orders 
 asb_queue_key_name=keda-monitor-send
 
 asb_uri="https://"$servicebus_namespace".servicebus.windows.net/"$asb_queue"/messages"
-asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $asb_queue_key_name --query primaryKey -o tsv)
+asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $asb_queue --name $asb_queue_key_name --query primaryKey -o tsv)
 echo $asb_queue_primary_key
 
 get_sas_token() {
@@ -48,13 +49,12 @@ get_sas_token() {
 
 sastoken=$(get_sas_token $asb_uri $asb_queue_key_name $asb_queue_primary_key)
 secretvalue=$sastoken
-
 secret_name="sastoken"
 
 # this will set the secret expiration in 8 hours from current date/time
 expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
 
-az keyvault secret set --name $secret --vault-name $azure_key_vault --value $secretvalue --subscription $subscription --expires "$expiredate"
+az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value "$secretvalue" --subscription $subscription --expires "$expiredate"
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
 $secret_uri
@@ -225,4 +225,3 @@ fi
 ### END - SOME FINAL CHECKS
 
 ### You can also check in the Azure portal that the Test is present and configured correctly (refer to README)
-```
