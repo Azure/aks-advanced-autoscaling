@@ -34,13 +34,9 @@ kubectl get pods -n keda
 ```cli
 servicebus_namespace=[servicebus namespace as created in Module 1]
 
-```
-> Need to discuss if we still need the following since it should be included already in Module 1 
-az servicebus namespace create --name $servicebus_namespace -g $rg_name --sku basic
-
+## [queue_name as created in Module 1] 
 queue_name=orders
-az servicebus queue create -g $rg_name --namespace-name $servicebus_namespace --name $queue_name
-```
+
 authorization_rule_name=order-consumer
 az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --rights Listen
 
