@@ -406,7 +406,7 @@ At this point, you should be ready to run the test and watch the pods scaling as
 1. From bash/sh shell please execute "watch kubectl get pod -n $demo_app_namespace -w".
 2. From Azure Portal (Azure Load Testing->Tests->Your Test), please run the test using one of the "Run" buttons as shown in the image below: </br>
 ![Azure Load Testing - Configure/Review instance](images/ALT%20-%20Run%20Test.png)
-> Note: the portal may show a panel on the right of the screen to confirm the parameters. Since the parameters are already set, please feel free to press "Run" and start the Test.
+> Note: the portal may show a panel on the right of the screen to confirm the parameters. Since the parameters are already set, please feel free to click "Run" and start the Test.
 
 
 
