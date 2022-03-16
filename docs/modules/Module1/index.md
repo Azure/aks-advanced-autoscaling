@@ -18,7 +18,7 @@ Parameter Name | Description
 
 Click this button and provide the parameters in the portal - see parameters below for an explanation of the template parameters
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Faks-advanced-autoscaling%2Fmodule1%2Fdeploy%2Fdeployrg.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Faks-advanced-autoscaling%2Fmain%2Fdeploy%2Fdeployrg.json)
 
 #### About the button
     In order to create a Deploy to Azure button, you create a link to https://portal.azure.com/#create/Microsoft.Template/uri/<html encoded url to the file you wan to deploy>
