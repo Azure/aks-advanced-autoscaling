@@ -1,3 +1,5 @@
+> Please make sure that Load Test Owner role is correctly assigned to Azure Load Testing resource (see https://docs.microsoft.com/en-us/azure/load-testing/how-to-assign-roles#manage-resource-access)
+
 # Welcome to: Module 2: Application Deployment and Testing with Azure Load Testing
 The output of this lab be this diagram:
 
@@ -209,8 +211,12 @@ get_sas_token() {
 
 sastoken=$(get_sas_token $asb_uri $asb_queue_key_name $asb_queue_primary_key)
 secretvalue=$sastoken
-
 secret_name="sastoken"
+
+## get current user upn
+upn=$(az ad signed-in-user show --query userPrincipalName -o tsv)
+## add access policy for current user to azure key vault
+az keyvault set-policy -g $rg_name -n $azure_key_vault --secret-permissions all --upn $upn
 
 # this will set the secret expiration in 8 hours from current date/time
 expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
