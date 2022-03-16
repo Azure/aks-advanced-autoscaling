@@ -1,10 +1,12 @@
-> Please make sure that Load Test Owner role is correctly assigned to Azure Load Testing resource (see https://docs.microsoft.com/en-us/azure/load-testing/how-to-assign-roles#manage-resource-access)
 
-# Welcome to: Module 2: Application Deployment and Testing with Azure Load Testing
+
+# Module 2: Application Deployment and Testing with Azure Load Testing
 The output of this lab be this diagram:
 
 ![Architecture diagram](../../assets/images/module2/AutoscalingLab.png)
 
+> Please make sure that Load Test Owner role is correctly assigned to Azure Load Testing resource (see https://docs.microsoft.com/en-us/azure/load-testing/how-to-assign-roles#manage-resource-access)
+> 
 ### Install KEDA
 
 * Execute the following:
@@ -148,7 +150,7 @@ echo $asb_connectionstring4alt
 ```
 #### Publishing messages to the queue
 
-https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/blob/main/connecction-string-scenario.md#publishing-messages-to-the-queue
+https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/blob/main/connection-string-scenario.md#publishing-messages-to-the-queue
 
 #### Watching the pods scale
 
@@ -156,7 +158,7 @@ https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/blob/main/conn
 
 ### Create Azure Load Testing resources (Test, Secrets, Test settings)
 
-> Note: the entire sequence of commands is also included in ["Option 1 - ALT Creation.sh script"](deploy/Option%201%20-%20ALT%20Creation.sh)
+> Note: the entire sequence of commands is also included in ["Option 1 - ALT Creation.sh script"](https://github.com/Azure/aks-advanced-autoscaling/tree/main/tools/deploy/module2/Option%201%20-%20ALT%20Creation.sh)
 
 First, let's setup our variables:
 ```
