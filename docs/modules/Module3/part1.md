@@ -5,12 +5,11 @@ has_children: false
 nav_order: 2
 ---
 
-
-# Module 3 Lab Instructions AKS Burst Scaling with Azure Container Instances (ACI) / Virtual Nodes
+# Burst Scaling with Azure Container Instances (ACI) / Virtual Nodes
 
 **Architecture Diagram**
 
-![Burst to Azure Container Instances](/docs/autoscaling-workshop/module3/images/AKS-ACI.png)
+![Burst to Azure Container Instances](../../assets/images/3-AKS-ACI.png)
 
 **ACI Benefits**
 
@@ -64,5 +63,4 @@ affinity:
 
 ## Module 3 Lab Instructions
 
-[INSTRUCTIONS](/INSTRUCTIONS.md)
-
+[INSTRUCTIONS](part2.md)
