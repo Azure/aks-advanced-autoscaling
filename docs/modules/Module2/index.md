@@ -4,6 +4,7 @@
 The output of this lab be this diagram:
 
 ![Architecture diagram](../../assets/images/module2/AutoscalingLab.png)
+
 ### Install KEDA
 
 * Execute the following:
@@ -35,6 +36,7 @@ helm install keda kedacore/keda --namespace keda
 kubectl get pods -n keda
 ```
 ![kedarunning](../../assets/images/module2/pods-keda-picture.png)
+
 
 ### Creating a new Azure Service Bus namespace & queue
 
@@ -98,7 +100,6 @@ kubectl get deployments --namespace $demo_app_namespace -o wide
 ```
 ![hparunning](../../assets/images/module2/hpa-picture.png)
 
-
 ### Looking into the details of Keda scaledobject
 
 * Execute the following
@@ -126,7 +127,6 @@ kubectl get pod -n $demo_web_namespace -w
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module2/deploy-web.yaml -n $demo_web_namespace
-
 kubectl get pod -n $demo_web_namespace -w 
 
 --Wait for the pod to be in Running state before proceeding to the next step.
@@ -190,6 +190,7 @@ asb_queue_key_name=alt-send
 
 asb_uri="https://"$servicebus_namespace".servicebus.windows.net/"$asb_queue"/messages"
 asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $asb_queue --name $asb_queue_key_name --query primaryKey -o tsv)
+
 echo $asb_queue_primary_key
 
 # Function to build a valid SAS token. Reference: https://docs.microsoft.com/en-us/rest/api/eventhub/generate-sas-token
@@ -376,6 +377,7 @@ Feel free to perform some final checks with the following commands:
 ## Let's verify that we got a http code 200 = OK for the Test File upload validation
 RESPONSE_200_OK="200"
 if [[ "$validateUploadFileTestResponse" == *"$RESPONSE_200_OK"* ]]
+
 then 
     echo -e "\n\n*** STATUS OK *** :-) --> File ID is available  OK to continue"
 else
@@ -407,3 +409,4 @@ At this point, you should be ready to run the test and watch the pods scaling as
 2. From Azure Portal (Azure Load Testing->Tests->Your Test), please run the test using one of the "Run" buttons as shown in the image below: </br>
 ![Azure Load Testing - Configure/Review instance](../../assets/images/module2/ALT%20-%20Run%20Test.png)
 > Note: the portal may show a panel on the right of the screen to confirm the parameters. Since the parameters are already set, please feel free to click "Run" and start the Test.
+
