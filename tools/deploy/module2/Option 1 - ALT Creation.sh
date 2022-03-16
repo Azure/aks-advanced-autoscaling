@@ -1,199 +1,36 @@
-> Please make sure that Load Test Owner role is correctly assigned to Azure Load Testing resource (see https://docs.microsoft.com/en-us/azure/load-testing/how-to-assign-roles#manage-resource-access)
-
-# Welcome to: Module 2: Application Deployment and Testing with Azure Load Testing
-The output of this lab be this diagram:
-
-![Architecture diagram](../../assets/images/module2/AutoscalingLab.png)
-
-### Install KEDA
-
-* Execute the following:
-
-```
-### BEGIN - SETTING VARIABLES 
-
-rg_name=[name of resource group as created in module 1]
-servicebus_namespace=[servicebus namespace as created in Module 1]
-
-### END - SETTING VARIABLES
-```
-* Please execute the following script:
-```
-## [aks as created in Module 1 - no need to change]
-akscluster_name=akscluster 
-
-helm repo add kedacore https://kedacore.github.io/charts
-helm repo update
-
-az aks get-credentials --admin -g $rg_name --name $akscluster_name
-
-kubectl create namespace keda
-helm install keda kedacore/keda --namespace keda
-```
-
-* Check keda is running
-```
-kubectl get pods -n keda
-```
-![kedarunning](../../assets/images/module2/pods-keda-picture.png)
-
-
-### Creating a new Azure Service Bus namespace & queue
-
-* Execute the following
-
-```cli
-## [queue_name as created in Module 1 - no need to modify] 
-queue_name=orders
-
-authorization_rule_name=order-consumer
-az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --rights Listen
-
-queue_connection_string=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $authorization_rule_name --query primaryConnectionString -o tsv)
-
-demo_app_namespace=order-processor
-kubectl create namespace $demo_app_namespace
-
-monitor_authorization_rule_name=order-monitor
-az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --rights Manage Send Listen
-
-monitor_connection_string=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
-
-keda_servicebus_secret=keda-servicebus-secret
-kubectl create secret generic $keda_servicebus_secret --from-literal=keda-connection-string=$monitor_connection_string -n $demo_app_namespace
-
-kubectl create secret generic order-consumer-secret --from-literal=queue-connection-string=$queue_connection_string -n $demo_app_namespace
-
-demo_web_namespace=order-portal
-kubectl create namespace $demo_web_namespace
-
-kubectl create secret generic order-consumer-secret --from-literal=queue-connection-string=$monitor_connection_string -n $demo_web_namespace
-
-```
-
-### Deploying order processor app and Keda scaledobject
-
-* Execute the following
-
-```cli
-cd [file path to module2 deployment files ]
-kubectl apply -f tools/deploy/module2/deploy-app.yaml --namespace $demo_app_namespace
-
-kubectl apply -f tools/deploy/module2/deploy-autoscaling.yaml --namespace $demo_app_namespace
-
-```
-* Alternative the following:
-
-```
-kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module2/deploy-app.yaml -n $demo_app_namespace
-
-kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module2/deploy-autoscaling.yaml -n $demo_app_namespace
-
-```
-
-* Take a look at the HPA state and ScaledObject before proceeding to the next step.
-```
-kubectl get hpa -n $demo_app_namespace -o wide
-kubectl get so -n $demo_app_namespace -o wide
-kubectl get deployments --namespace $demo_app_namespace -o wide
-
-```
-![hparunning](../../assets/images/module2/hpa-picture.png)
-
-### Looking into the details of Keda scaledobject
-
-* Execute the following
-
-```cli
-
-kubectl describe scaledobject order-processor-scaler -n $demo_app_namespace
-
-```
-
-### Deploying web order portal
-
-* Execute the following
-```
-cd [file path to module2]
-kubectl apply -f tools/deploy/module2/deploy-web.yaml --namespace $demo_web_namespace
-
-kubectl get pod -n $demo_web_namespace -w 
-
---Wait for the pod to be in Running state before proceeding to the next step.
-
-```
-
-* Alternative the following:
-
-```
-kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module2/deploy-web.yaml -n $demo_web_namespace
-kubectl get pod -n $demo_web_namespace -w 
-
---Wait for the pod to be in Running state before proceeding to the next step.
-
-```
-
-#### Setting up and running service bus
-
-* Execute the following
-
-```cli
-
-monitor_authorization_rule_name=alt-send
-az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --rights Listen Send
-
-asb_connectionstring4alt=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --query primaryConnectionString -o tsv)
-
-echo $asb_connectionstring4alt 
-```
-#### Publishing messages to the queue
-
-https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/blob/main/connecction-string-scenario.md#publishing-messages-to-the-queue
-
-#### Watching the pods scale
-
-* In the bash shell: run `watch kubectl get pod -n $demo_app_namespace -w`
-
-### Create Azure Load Testing resources (Test, Secrets, Test settings)
-
-> Note: the entire sequence of commands is also included in ["Option 1 - ALT Creation.sh script"](deploy/Option%201%20-%20ALT%20Creation.sh)
-
-First, let's setup our variables:
-```
-#### First, set the values (SETTING ALL VARIABLES section)
+#### First, set the values of the variables (SETTING ALL VARIABLES section)
 #### Then run the rest of the script (SCRIPT EXECUTION section)  
 
 ## Note: if your value set contains spaces please enclose the value in double quotes.
-## Also, please make sure to run the following commands from same command directory as the location of LvLUpAutoscalingLoadTest.jmx in order to let the "-F file=" parameter load the jmx content correctly (use cd to set your command directory) </br>
+## Also, please make sure to run the following commands from same command directory 
+## as the location of LvLUpAutoscalingLoadTest.jmx in order to let the "-F file=" parameter 
+## load the jmx content correctly (use cd to set your command directory) </br>
 
-### BEGIN - SETTING ALL VARIABLES
-
+### *** BEGIN - SETTING ALL VARIABLES
+directory_of_LvLUpAutoscalingLoadTestjmx="[cd path of LvLUpAutoscalingLoadTest.jmx]"
 subscription=[your subscription id used in Module 1]
 rg_name=[name of resource group created in Module 1]
 servicebus_namespace=[name of your azure service bus namespace]  
 azure_key_vault=[your azure key vault name created in Module 1]
 alt=[your azure load testing instance name created in Module 1]
-## set the value of the azure service bus endpoint uri - typically this is "asbnamespace.servicebus.windows.net"
+## set the value of the azure service bus endpoint uri to test - e.g.: "asbnamespace.servicebus.windows.net" - no http(s) prefix
 asb_endpoint_uri=[your asb uri]
 
-### END - SETTING ALL VARIABLES
-```
-Now let's execute all the commands:
-```
+### *** END - SETTING ALL VARIABLES
+
 ### BEGIN - SCRIPT EXECUTION - copy, paste, run
 
 # Unless you are already logged in, 'az login'  will open a browser window to let you authenticate. Once authenticated, the script will continue running 
+cd "$directory_of_LvLUpAutoscalingLoadTestjmx"
 az login
 az account set -s $subscription 
 asb_queue=orders 
-asb_queue_key_name=alt-send
+asb_queue_key_name=keda-monitor-send
 
 asb_uri="https://"$servicebus_namespace".servicebus.windows.net/"$asb_queue"/messages"
 asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $asb_queue --name $asb_queue_key_name --query primaryKey -o tsv)
-
 echo $asb_queue_primary_key
 
-# Function to build a valid SAS token. Reference: https://docs.microsoft.com/en-us/rest/api/eventhub/generate-sas-token
 get_sas_token() {
     local ASB_URI=$1
     local SHARED_ACCESS_KEY_NAME=$2
@@ -225,7 +62,7 @@ expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
 az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value "$secretvalue" --subscription $subscription --expires "$expiredate"
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
-$secret_uri q
+$secret_uri
 
 ## Default value already set for the load test instance that we are going to create. Feel free to keep it as-is or modify
 testname="LvlUpNewTest"
@@ -369,15 +206,12 @@ uploadFileTestURIResponse=$(curl $uploadFileTestURI -X PUT -w "%{http_code}" -H 
 
 ### END - SCRIPT EXECUTION
 
-```
-Feel free to perform some final checks with the following commands:
-```
+
 ### BEGIN - SOME FINAL CHECKS
 
 ## Let's verify that we got a http code 200 = OK for the Test File upload validation
 RESPONSE_200_OK="200"
 if [[ "$validateUploadFileTestResponse" == *"$RESPONSE_200_OK"* ]]
-
 then 
     echo -e "\n\n*** STATUS OK *** :-) --> File ID is available  OK to continue"
 else
@@ -394,19 +228,6 @@ else
     echo -e "\n\n*** IMPORTANT *** :'-( ***: Jmx File Not Uploaded - Stop Executing any further and verify the error"
     echo -e "Status: "$uploadFileTestURIResponse
 fi
-
-
 ### END - SOME FINAL CHECKS
-```
-If the commands did run correctly you should see in the portal a Test configuration like this:
-![Azure Load Testing - Test instance](../../assets/images/module2/ALT%20-%20Test%20instance%20created.png)
 
-Click on the Test instance shown on the list ("LvlUpNewTest") to configure or review the instance:
-![Azure Load Testing - Configure/Review instance](../../assets/images/module2/Configure%20or%20Review%20Test%20instance.png)
-
-At this point, you should be ready to run the test and watch the pods scaling as previously explained: 
-1. From bash/sh shell please execute "watch kubectl get pod -n $demo_app_namespace -w".
-2. From Azure Portal (Azure Load Testing->Tests->Your Test), please run the test using one of the "Run" buttons as shown in the image below: </br>
-![Azure Load Testing - Configure/Review instance](../../assets/images/module2/ALT%20-%20Run%20Test.png)
-> Note: the portal may show a panel on the right of the screen to confirm the parameters. Since the parameters are already set, please feel free to click "Run" and start the Test.
-
+### You can also check in the Azure portal that the Test is present and configured correctly (refer to README)
