@@ -16,8 +16,11 @@ var name = 'akscluster'
 var loadTestName = '${alias}lvluploadtesting'
 var vnetName = '${alias}lvlupvnet'
 var crName = '${alias}lvlupacr'
+var kvName = '${alias}lvlupkeyvault'
 var aksRoleAssignmentPullACR = guid(resourceGroup().id, containerRegistry.name, aksCluster.id, 'acrpull')
+var altRoleAssignmentReadKV = guid(resourceGroup().id, keyvault.id, loadtesting.id, 'reader')
 var roleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions','7f951dda-4ed3-4680-a7ca-43fe172d538d')
+var readerRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions','acdd72a7-3385-48ef-bd42-f606fba81ae7')
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
   name: crName 
@@ -132,8 +135,45 @@ resource assignACRPullToAks 'Microsoft.Authorization/roleAssignments@2020-04-01-
 resource loadtesting 'Microsoft.LoadTestService/loadTests@2021-12-01-preview' = {
   name: loadTestName
   location: loadTestingLocation
-  properties: {
+  identity: {
+    type:'SystemAssigned'
+  }
+  properties: {     
     
+  }
+}
+resource keyvault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
+  name: kvName
+  location: location 
+  properties: {
+    accessPolicies: [
+    {      
+      objectId: loadtesting.identity.principalId
+      permissions: {       
+       
+        secrets: [
+          'get'
+        ]       
+      }
+      tenantId: subscription().tenantId
+    }
+  ]
+    
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    tenantId: subscription().tenantId
+  }
+}
+
+resource assignALTToKVRead 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: altRoleAssignmentReadKV
+  scope: keyvault
+  properties:{
+    principalId: loadtesting.identity.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: readerRoleDefinitionId
   }
 }
 
