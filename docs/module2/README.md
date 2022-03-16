@@ -350,6 +350,9 @@ echo "****** End - Create Test API Response"
 ### The previous command should result in a json output with the properties of the Test instance just created.
 ### If you see a json output and no error (or null) value - process is working fine
 
+## Let's wait for the creation of the Test to be completed
+sleep 5
+
 fileid=$(uuid)
 hdr_authorization="Authorization: Bearer $accessToken"
 validateUploadFileTestURI="https://$dataPlaneURI/file/$fileid:validate?"$alt_apiversion
