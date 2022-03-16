@@ -1,34 +1,14 @@
-## LevelUP - AKS Advanced Autoscaling
+# Project
 
-### Background
+> This repo has been populated by an initial template to help get you started. Please
+> make sure to update the content to build a great experience for community-building.
 
-This is the deployment of []. This is an example deployment showcasing the following technologies:
+As the maintainer of this project, please make a few updates:
 
-* AKS
-* Keda
-* Open Serivce Mesh
-* Azure Container Instances
-* Azure Load Testing
-
-The business scenario is []
-
-### Architecture
-
-Architecture Diagram
-
-![Architecture diagram](assets/Architecture.png)
-
-
-### LevelUP - AKS Advanced Autoscaling Workshop Lab
-In order to make this LevelUP run as smoothly as possible, please install [Prerequisites](assets/Prerequisites.md) prior to the LevelUP.
-
-* Module 1 Environment Setup and Infrastructure Deployment
-
-* Module 2 [Application Deployment and Testing with Azure Load Testing](docs/module2/README.md)
-
-* Module 3 Burst scaling with Azure Container Instances
-
-* Module 4 [Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing](docs/module4/README.md)
+- Improving this README.MD file to provide a great experience
+- Updating SUPPORT.MD with content about this project's support experience
+- Understanding the security reporting process in SECURITY.MD
+- Remove this section from the README
 
 ## Contributing
 
