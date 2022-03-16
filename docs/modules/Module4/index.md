@@ -1,4 +1,4 @@
-# Welcome to: Module 4: Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
+# Module 4: Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
 
 ### Install OpenServiceMesh
 
@@ -21,7 +21,7 @@ kubectl get pods -n kube-system --selector app.kubernetes.io/name=openservicemes
 kubectl get services -n kube-system --selector app.kubernetes.io/name=openservicemesh.io
 
 ```
-![picture](images/picture01.png)
+![picture](../../assets/images/module4/picture01.png)
 ### Installing Prometheus via helm chart kube-prometheus-stack
 
 * Execute the following
@@ -30,7 +30,7 @@ kubectl get services -n kube-system --selector app.kubernetes.io/name=openservic
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 helm install prometheus \
-prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/docs/module4/deploy/byo_values.yaml \
+prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module4/byo_values.yaml \
 --namespace monitoring \
 --create-namespace
 
@@ -41,7 +41,7 @@ prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/
 kubectl --namespace monitoring get pods -l "release=prometheus"
 
 ```
-![picture](images/picture02.png)
+![picture](../../assets/images/module4/picture02.png)
 
 ### Disabled metrics scapping from components that AKS don't expose.
 
@@ -49,7 +49,7 @@ kubectl --namespace monitoring get pods -l "release=prometheus"
 
 ```
 helm upgrade prometheus \
-prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/docs/module4/deploy/byo_values.yaml \
+prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module4/byo_values.yaml \
 --namespace monitoring \
 --set kubeEtcd.enabled=false \
 --set kubeControllerManager.enabled=false \
@@ -70,7 +70,7 @@ sleep 10s
 osm version --osm-namespace kube-system
 
 ```
-![picture](images/picture03.png)
+![picture](../../assets/images/module4/picture03.png)
 ### Adding namespace to mesh and enabling OSM metrics
 
 * Execute the following
@@ -85,14 +85,14 @@ kubectl get pods -n <osm-mesh-namespace> -l app=osm-controller
 kubectl get pods -n kube-system -l app=osm-controller
 
 ```
-![picture](images/picture04.png)
+![picture](../../assets/images/module4/picture04.png)
 ### Portforward Prometheus in another new terminal and open http://localhost:9090 :
 ```
 nohup kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090 &
 ```
 
 ### Query to run in Prometheus to pull http metrics:
-![picture](images/picture05.png)
+![picture](../../assets/images/module4/picture05.png)
 ```
 envoy_cluster_upstream_rq_xx{envoy_response_code_class="2"}
 
@@ -109,7 +109,7 @@ sleep 10s
 kubectl -n projectcontour get po,svc
 
 ```
-![picture](images/picture06.png)
+![picture](../../assets/images/module4/picture06.png)
 ### Create HTTPProxy and ingressBackend for Order-web application
 #### Get the public/External IP of the Azure loadbalancer created for the Contour Services
 ```
@@ -155,14 +155,14 @@ sleep 5s
 kubectl get httpproxy,ingressbackend -n order-portal
 
 ```
-![picture](images/picture07.png)
+![picture](../../assets/images/module4/picture07.png)
 ### Create KEDA ScaledObject based on Query
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/module4/docs/module4/deploy/keda_order_http.yaml
+kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module4/keda_order_http.yaml
 ```
 
-![picture](images/picture08.png)
+![picture](../../assets/images/module4/picture08.png)
 ### For watching the pods been created:
 
 ```
@@ -171,21 +171,21 @@ kubectl get pods -n order-portal -w
 
 ### Now navigate to your Azure Load Testing and add RBAC role of "Load Test Owner" to yourself:
 
-![picture](images/picture09.png)
+![picture](../../assets/images/module4/picture09.png)
 ### Create a new test with the file below:
 
 * Download this file and in line 40 replace the "your-ip-dns" with the value of your env. variable $myip_dns 
 [jmxloadtest](deploy/LvLUpAutoscalingLoadTest.jmx)
-![picture](images/picture10.png)
+![picture](../../assets/images/module4/picture10.png)
 
 * Now navigate to your Azure Load Testing and hit Create under "Create a new test". Next name the load test and click on the tab "Test Tab" to upload your jmx file:
-![picture](images/picture11.png)
+![picture](../../assets/images/module4/picture11.png)
 
 * Next hit the "Test criteria" and add the "Response time" and "Error" metrics like the photo below:
-![picture](images/picture12.png)
+![picture](../../assets/images/module4/picture12.png)
 
 * Now hit "Review + create"
 
 ### Watch the metrics and the terminal with the pods
-![picture](images/picture13.png)
-![picture](images/picture14.png)
+![picture](../../assets/images/module4/picture13.png)
+![picture](../../assets/images/module4/picture14.png)
