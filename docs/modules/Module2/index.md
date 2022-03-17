@@ -183,12 +183,12 @@ asb_endpoint_uri=[your asb uri]
 
 ### END - SETTING ALL VARIABLES
 ```
+> Please use the same shell to run the commands until the end of this module in order to keep the values of the variables in memory.
 
 The following commands will let you create an Azure Service Bus SAS token (with 8 hours lifetime) that will be stored in a secret in Azure Key Vault. The secret will be used by the Azure Load Testing test instance to connect to Azure Service Bus. 
+Please copy, paste and run the following commands in a shell:
 
 ```
-### BEGIN - SCRIPT EXECUTION - copy, paste, run
-
 # Unless you are already logged in, 'az login'  will open a browser window to let you authenticate. Once authenticated, the script will continue running 
 az login
 az account set -s $subscription 
@@ -233,7 +233,12 @@ az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
 $secret_uri q
+```
 
+The following commands will let you create an Azure Load Testing Test instance that will contain the logic and parameters of the test execution.
+Please copy, paste and run the following commands in a shell:
+
+```
 ## Default value already set for the load test instance that we are going to create. Feel free to keep it as-is or modify
 testname="LvlUpNewTest"
 
