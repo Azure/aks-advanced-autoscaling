@@ -19,7 +19,9 @@ servicebus_namespace=[servicebus namespace as created in Module 1]
 
 ### END - SETTING VARIABLES
 ```
+
 * Please execute the following script:
+
 ```
 ## [aks as created in Module 1 - no need to change]
 akscluster_name=akscluster 
