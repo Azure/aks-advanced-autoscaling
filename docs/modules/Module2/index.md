@@ -243,10 +243,10 @@ Please copy, paste and run the following commands in a shell:
 ## The following line is only necessary for Git Bash shell
 export MSYS_NO_PATHCONV=1
 
-## Let's get your AAD objectId
+## Let's retrieve your AAD objectId from current session user information
 objectId=$(az ad signed-in-user show --query "objectId" -o tsv)
 
-## Let's set the scope
+## Let's set the scope that will see the role assigned
 altscope="/subscriptions/$ubscription/resourceGroups/$rg_name/providers/Microsoft.LoadTestService/loadtests/$alt/"
 
 role="Load Test Owner"
