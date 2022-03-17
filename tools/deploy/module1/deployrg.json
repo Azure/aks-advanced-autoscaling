@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.4.1124.51302",
-      "templateHash": "16053185471817004317"
+      "version": "0.4.1318.3566",
+      "templateHash": "9135801783074113689"
     }
   },
   "parameters": {
@@ -87,8 +87,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1124.51302",
-              "templateHash": "1917431243428290819"
+              "version": "0.4.1318.3566",
+              "templateHash": "2152624616623899384"
             }
           },
           "parameters": {
@@ -116,8 +116,11 @@
             "loadTestName": "[format('{0}lvluploadtesting', parameters('alias'))]",
             "vnetName": "[format('{0}lvlupvnet', parameters('alias'))]",
             "crName": "[format('{0}lvlupacr', parameters('alias'))]",
+            "kvName": "[format('{0}lvlupkeyvault', parameters('alias'))]",
             "aksRoleAssignmentPullACR": "[guid(resourceGroup().id, variables('crName'), resourceId('Microsoft.ContainerService/managedClusters', variables('name')), 'acrpull')]",
-            "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]"
+            "altRoleAssignmentReadKV": "[guid(resourceGroup().id, resourceId('Microsoft.KeyVault/vaults', variables('kvName')), resourceId('Microsoft.LoadTestService/loadTests', variables('loadTestName')), 'reader')]",
+            "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]",
+            "readerRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]"
           },
           "resources": [
             {
@@ -248,7 +251,52 @@
               "apiVersion": "2021-12-01-preview",
               "name": "[variables('loadTestName')]",
               "location": "[parameters('loadTestingLocation')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
               "properties": {}
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[variables('kvName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "accessPolicies": [
+                  {
+                    "objectId": "[reference(resourceId('Microsoft.LoadTestService/loadTests', variables('loadTestName')), '2021-12-01-preview', 'full').identity.principalId]",
+                    "permissions": {
+                      "secrets": [
+                        "get"
+                      ]
+                    },
+                    "tenantId": "[subscription().tenantId]"
+                  }
+                ],
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                },
+                "tenantId": "[subscription().tenantId]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.LoadTestService/loadTests', variables('loadTestName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-04-01-preview",
+              "scope": "[format('Microsoft.KeyVault/vaults/{0}', variables('kvName'))]",
+              "name": "[variables('altRoleAssignmentReadKV')]",
+              "properties": {
+                "principalId": "[reference(resourceId('Microsoft.LoadTestService/loadTests', variables('loadTestName')), '2021-12-01-preview', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal",
+                "roleDefinitionId": "[variables('readerRoleDefinitionId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]",
+                "[resourceId('Microsoft.LoadTestService/loadTests', variables('loadTestName'))]"
+              ]
             }
           ],
           "outputs": {
@@ -295,8 +343,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1124.51302",
-              "templateHash": "7922864535883151252"
+              "version": "0.4.1318.3566",
+              "templateHash": "7928206777737480710"
             }
           },
           "parameters": {
