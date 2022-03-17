@@ -187,6 +187,7 @@ asb_endpoint_uri=[your asb uri]
 *Reusing the same shell to run the commands until the end of this module will allow you to keep the values of the variables in memory. It is suggested to keep running all the commands of this module in the same shell where possible.*
 
 The following commands will let you create an Azure Service Bus SAS token (with 8 hours lifetime) that will be stored in a secret in Azure Key Vault. The secret will be used by the Azure Load Testing test instance to connect to Azure Service Bus. 
+
 Please copy, paste and run the following commands in a shell:
 
 ```
@@ -237,6 +238,7 @@ $secret_uri q
 ```
 
 The following commands will let you create an Azure Load Testing Test instance that will contain the logic and parameters of the test execution.
+
 Please copy, paste and run the following commands in a shell:
 
 ```
@@ -361,8 +363,16 @@ echo "****** Begin - Create Test API Response"
 echo $loadCreateTestResponse
 echo "****** End - Create Test API Response"
 
-### The previous command should result in a json output with the properties of the Test instance just created.
-### If you see a json output and no error (or null) value - process is working fine
+```
+
+The previous sequence of commands should result in a json string in the output. The json string will contain the properties of the Test instance just created. 
+The presence of the test properties in the output (no error or null value) would be confirmation that the test instance has been created successfully.
+
+We are now going to upload the jmx/jmeter file to the test instance. The file contains the logic and parameters of the test.
+
+Please copy, paste and run the following commands in a shell:
+
+```
 
 ## Let's wait for the creation of the Test to be completed
 sleep 5
