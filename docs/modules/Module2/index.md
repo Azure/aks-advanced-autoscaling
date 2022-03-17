@@ -183,7 +183,8 @@ asb_endpoint_uri=[your asb uri]
 
 ### END - SETTING ALL VARIABLES
 ```
-> Please use the same shell to run the commands until the end of this module in order to keep the values of the variables in memory.
+
+*Reusing the same shell to run the commands until the end of this module will allow you to keep the values of the variables in memory. It is suggested to keep running all the commands of this module in the same shell where possible.*
 
 The following commands will let you create an Azure Service Bus SAS token (with 8 hours lifetime) that will be stored in a secret in Azure Key Vault. The secret will be used by the Azure Load Testing test instance to connect to Azure Service Bus. 
 Please copy, paste and run the following commands in a shell:
