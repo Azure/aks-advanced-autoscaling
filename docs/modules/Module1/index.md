@@ -2,7 +2,9 @@
 
 ## Deploy Infrastructure
 
-To deploy the infrastructure for this workshop you can choose from one of the two options below.  Use the following parameter references when deploying infrastructure:
+To deploy the infrastructure for this workshop you can choose from one of the two options below.  This will deploy your resources into a single resource group.  Once the lab is complete, you can clean up the resources by deleting the resource group that is created upon deployment.
+
+Use the following parameter references when deploying infrastructure:
 
 #### Parameters Reference
 
@@ -29,7 +31,40 @@ Click this button and provide the parameters in the portal - see parameters belo
 * this would require you to have the bicep cli installed on your machine [Install bicep tools](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 
 ### Option 2 - Deploy using CLI
-you can [clone the repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) and use az powershell or az cli to deploy the bicep template from your local machine.
+You can [clone the repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) and use az powershell or az cli to deploy the bicep template from your local machine.
 you must have the proper cli and or powershell 
 [Install Azure CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#azure-cli)
 [Install Azure Powershell](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#azure-powershell)
+
+
+## Check Deployment
+
+Visit the new resource group that was created in the deployment and ensure that the following resources are deployed - 
+![azure resources screenshot](../../assets/images/module1/lvlupresources.png)
+
+The following table lists the resources that should be created:<br/>
+Resource Type | Resource Name 
+--------------|--------------
+Kubernetes Service | akscluster 
+Nework Security Group | \<alias>AKSNSG
+Container Registry | \<alias>lvlupacr
+Key Vault | \<alias>lvlupkeyvault
+Azure Load Testing | \<alias>lvluploadtesting
+Virtual Network | \<alias>lvlupvnet
+Service Bus Namespace | \<alias>servicebus
+
+Click on the link for the virtual network, and then click on subnets from the left hand navigation.  Ensure there are 2 subnets listed, one called aksSubnet and a second one called aciSubnet Look for \<alias>AKSNSG resource to be associated to the aksSubnet. note: the aciSubnet will likely also have an associated NSG that is created by policy if deploying to a corporate subscription - 
+![subnets view of vnet](../../assets/images/module1/nsgassociation.png)
+
+Click on the link for the security group and make sure that there is an inbound rule with priority 1000 to allow http such as - 
+![nsg rule 1000 showing open port 80](../../assets/images/module1/port80rule.png)
+
+Go back to the resource group, click on the Service Bus resource, and choose Queues from the left hand navigation.  Ensure there is a queue named orders such as - 
+![view of Queues in service bus](../../assets/images/module1/ServiceBusCheck.png)
+
+Finally, go back to the resource group, click on the Azure Container Registry resource, on the left hand navigation, choose Access control (IAM) - choose the Role assignments tab from the top context menu, and check that your akscluster-agentpool has been given AcrPull permissions to the container registry -
+![container registry permissions view](../../assets/images/module1/acr_permissions.png)
+
+# Clean up
+
+To clean up these resources, simply delete the single resource group that is created by the deployment.
