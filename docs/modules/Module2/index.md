@@ -237,7 +237,7 @@ secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key
 $secret_uri q
 ```
 
-The following commands will let you create an Azure Load Testing Test instance that will contain the logic and parameters of the test execution.
+The following commands will let you create an Azure Load Testing Test instance that will contain the minimal structure of the test execution. We will update the structure later on in this module.
 
 Please copy, paste and run the following commands in a shell:
 
