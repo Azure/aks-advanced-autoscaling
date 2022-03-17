@@ -162,7 +162,8 @@ https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/blob/main/conn
 
 > Note: the entire sequence of commands is also included in ["Option 1 - ALT Creation.sh script"](https://github.com/Azure/aks-advanced-autoscaling/tree/main/tools/deploy/module2/Option%201%20-%20ALT%20Creation.sh)
 
-First, let's setup our variables:
+First, let's setup our variables by copying the following lines of code in a code editor of your choice and modifying the values according to your enviroment:
+
 ```
 #### First, set the values (SETTING ALL VARIABLES section)
 #### Then run the rest of the script (SCRIPT EXECUTION section)  
@@ -182,7 +183,9 @@ asb_endpoint_uri=[your asb uri]
 
 ### END - SETTING ALL VARIABLES
 ```
-Now let's execute all the commands:
+
+The following commands will let you create an Azure Service Bus SAS token (with 8 hours lifetime) that will be stored in a secret in Azure Key Vault. The secret will be used by the Azure Load Testing test instance to connect to Azure Service Bus. 
+
 ```
 ### BEGIN - SCRIPT EXECUTION - copy, paste, run
 
@@ -409,7 +412,7 @@ Click on the Test instance shown on the list ("LvlUpNewTest") to configure or re
 ![Azure Load Testing - Configure/Review instance](../../assets/images/module2/Configure%20or%20Review%20Test%20instance.png)
 
 At this point, you should be ready to run the test and watch the pods scaling as previously explained: 
-1. From bash/sh shell please execute *"watch kubectl get pod -n $demo_app_namespace -w"*.
+1. From bash/sh shell please execute **"watch kubectl get pod -n $demo_app_namespace -w"**.
 2. From Azure Portal (Azure Load Testing->Tests->Your Test), please run the test using one of the "Run" buttons as shown in the image below: 
 
 ![Azure Load Testing - Configure/Review instance](../../assets/images/module2/ALT%20-%20Run%20Test.png)
