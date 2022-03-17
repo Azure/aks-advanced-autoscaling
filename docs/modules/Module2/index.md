@@ -5,8 +5,6 @@ The output of this lab be this diagram:
 
 ![Architecture diagram](../../assets/images/module2/AutoscalingLab.png)
 
-> Please make sure that Load Test Owner role is correctly assigned to Azure Load Testing resource (see https://docs.microsoft.com/en-us/azure/load-testing/how-to-assign-roles#manage-resource-access)
-> 
 ### Install KEDA
 
 * Execute the following:
@@ -235,6 +233,27 @@ az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
 $secret_uri q
+```
+
+Before proceeding with the next steps, we need to set your role assignment as "Load Test Owner" to the Azure Load Testing resource. The instructions on how you can execute this operation from the portal are documented here https://docs.microsoft.com/en-us/azure/load-testing/how-to-assign-roles#manage-resource-access. Anyhow, we will execute this operation via script to make it easier and faster. 
+
+Please copy, paste and run the following commands in a shell:
+
+```
+## The following line is only necessary for Git Bash shell
+export MSYS_NO_PATHCONV=1
+
+## Let's get your AAD objectId
+objectId=$(az ad signed-in-user show --query "objectId" -o tsv)
+
+## Let's set the scope
+altscope="/subscriptions/$ubscription/resourceGroups/$rg_name/providers/Microsoft.LoadTestService/loadtests/$alt/"
+
+role="Load Test Owner"
+
+az role assignment create --assignee $objectId --role "$role" --scope $altid
+
+
 ```
 
 The following commands will let you create an Azure Load Testing Test instance that will contain the minimal structure of the test execution. We will update the structure later on in this module.
