@@ -7,7 +7,7 @@ In this module you will learn how KEDA allows for fine-grained autoscaling (incl
 
 The output of this lab be this diagram:
 
-![Architecture diagram](../../assets/images/module2/AutoscalingLab.png)
+<img src="../../assets/images/module2/AutoscalingLab.png" width=600 />
 
 ### Install KEDA
 
