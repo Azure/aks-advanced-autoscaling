@@ -5,8 +5,6 @@ The output of this lab be this diagram:
 
 ![Architecture diagram](../../assets/images/module2/AutoscalingLab.png)
 
-> Please make sure that Load Test Owner role is correctly assigned to Azure Load Testing resource (see https://docs.microsoft.com/en-us/azure/load-testing/how-to-assign-roles#manage-resource-access)
-> 
 ### Install KEDA
 
 * Execute the following:
@@ -19,7 +17,9 @@ servicebus_namespace=[servicebus namespace as created in Module 1]
 
 ### END - SETTING VARIABLES
 ```
+
 * Please execute the following script:
+
 ```
 ## [aks as created in Module 1 - no need to change]
 akscluster_name=akscluster 
@@ -160,7 +160,8 @@ https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/blob/main/conn
 
 > Note: the entire sequence of commands is also included in ["Option 1 - ALT Creation.sh script"](https://github.com/Azure/aks-advanced-autoscaling/tree/main/tools/deploy/module2/Option%201%20-%20ALT%20Creation.sh)
 
-First, let's setup our variables:
+First, let's setup our variables by copying the following lines of code in a code editor of your choice and modifying the values according to your enviroment:
+
 ```
 #### First, set the values (SETTING ALL VARIABLES section)
 #### Then run the rest of the script (SCRIPT EXECUTION section)  
@@ -180,10 +181,14 @@ asb_endpoint_uri=[your asb uri]
 
 ### END - SETTING ALL VARIABLES
 ```
-Now let's execute all the commands:
-```
-### BEGIN - SCRIPT EXECUTION - copy, paste, run
 
+*Reusing the same shell to run the commands until the end of this module will allow you to keep the values of the variables in memory. It is suggested to keep running all the commands of this module in the same shell where possible.*
+
+The following commands will let you create an Azure Service Bus SAS token (with 8 hours lifetime) that will be stored in a secret in Azure Key Vault. The secret will be used by the Azure Load Testing test instance to connect to Azure Service Bus. 
+
+Please copy, paste and run the following commands in a shell:
+
+```
 # Unless you are already logged in, 'az login'  will open a browser window to let you authenticate. Once authenticated, the script will continue running 
 az login
 az account set -s $subscription 
@@ -228,7 +233,34 @@ az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
 $secret_uri q
+```
 
+Before proceeding with the next steps, we need to set your role assignment as "Load Test Owner" to the Azure Load Testing resource. The instructions on how you can execute this operation from the portal are documented here https://docs.microsoft.com/en-us/azure/load-testing/how-to-assign-roles#manage-resource-access. Anyhow, we will execute this operation via script to make it easier and faster. 
+
+Please copy, paste and run the following commands in a shell:
+
+```
+## The following line is only necessary for Git Bash shell
+export MSYS_NO_PATHCONV=1
+
+## Let's retrieve your AAD objectId from current session user information
+objectId=$(az ad signed-in-user show --query "objectId" -o tsv)
+
+## Let's set the scope that will see the role assigned
+altscope="/subscriptions/$ubscription/resourceGroups/$rg_name/providers/Microsoft.LoadTestService/loadtests/$alt/"
+
+role="Load Test Owner"
+
+az role assignment create --assignee $objectId --role "$role" --scope $altid
+
+
+```
+
+The following commands will let you create an Azure Load Testing Test instance that will contain the minimal structure of the test execution. We will update the structure later on in this module.
+
+Please copy, paste and run the following commands in a shell:
+
+```
 ## Default value already set for the load test instance that we are going to create. Feel free to keep it as-is or modify
 testname="LvlUpNewTest"
 
@@ -350,8 +382,16 @@ echo "****** Begin - Create Test API Response"
 echo $loadCreateTestResponse
 echo "****** End - Create Test API Response"
 
-### The previous command should result in a json output with the properties of the Test instance just created.
-### If you see a json output and no error (or null) value - process is working fine
+```
+
+The previous sequence of commands should result in a json string in the output. The json string will contain the properties of the Test instance just created. 
+The presence of the test properties in the output (no error or null value) would be confirmation that the test instance has been created successfully.
+
+We are now going to upload the jmx/jmeter file to the test instance. The file contains the logic and parameters of the test.
+
+Please copy, paste and run the following commands in a shell:
+
+```
 
 ## Let's wait for the creation of the Test to be completed
 sleep 5
@@ -407,8 +447,9 @@ Click on the Test instance shown on the list ("LvlUpNewTest") to configure or re
 ![Azure Load Testing - Configure/Review instance](../../assets/images/module2/Configure%20or%20Review%20Test%20instance.png)
 
 At this point, you should be ready to run the test and watch the pods scaling as previously explained: 
-1. From bash/sh shell please execute "watch kubectl get pod -n $demo_app_namespace -w".
-2. From Azure Portal (Azure Load Testing->Tests->Your Test), please run the test using one of the "Run" buttons as shown in the image below: </br>
+1. From bash/sh shell please execute **"watch kubectl get pod -n $demo_app_namespace -w"**.
+2. From Azure Portal (Azure Load Testing->Tests->Your Test), please run the test using one of the "Run" buttons as shown in the image below: 
+
 ![Azure Load Testing - Configure/Review instance](../../assets/images/module2/ALT%20-%20Run%20Test.png)
 > Note: the portal may show a panel on the right of the screen to confirm the parameters. Since the parameters are already set, please feel free to click "Run" and start the Test.
 
