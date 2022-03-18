@@ -1,16 +1,23 @@
 
 
 # Module 2: Application Deployment and Testing with Azure Load Testing
+In this module you will learn how KEDA allows for fine-grained autoscaling (including to/from zero) for event driven Kubernetes workloads. KEDA serves as a Kubernetes Metrics Server and allows users to define autoscaling rules using a dedicated Kubernetes custom resource definition.
+
+
+
 The output of this lab be this diagram:
 
 ![Architecture diagram](../../assets/images/module2/AutoscalingLab.png)
 
 ### Install KEDA
 
-* Execute the following:
+First, let's setup our variables by copying the following lines of code in a code editor of your choice and modifying the values according to your enviroment:
 
 ```
-### BEGIN - SETTING VARIABLES 
+### BEGIN - SETTING VARIABLES
+First, let's setup our variables by copying the following lines of code in a code editor of your choice and modifying the values according to your enviroment:
+
+#### Note: if your value set contains spaces please enclose the value in double quotes.
 
 rg_name=[name of resource group as created in module 1]
 servicebus_namespace=[servicebus namespace as created in Module 1]
@@ -18,33 +25,39 @@ servicebus_namespace=[servicebus namespace as created in Module 1]
 ### END - SETTING VARIABLES
 ```
 
-* Please execute the following script:
+Deploying KEDA with Helm is very simple.
+
+Add Helm repo to the AKS cluster:
 
 ```
 ## [aks as created in Module 1 - no need to change]
 akscluster_name=akscluster 
 
 helm repo add kedacore https://kedacore.github.io/charts
+```
+Update Helm repo:
+```
 helm repo update
 
 az aks get-credentials --admin -g $rg_name --name $akscluster_name
-
+```
+Install KEDA Helm chart from the AKS repo:
+```
 kubectl create namespace keda
 helm install keda kedacore/keda --namespace keda
 ```
 
-* Check keda is running
+Check to make sure KEDA is running successfully:
 ```
 kubectl get pods -n keda
 ```
 ![kedarunning](../../assets/images/module2/pods-keda-picture.png)
 
 
-### Creating a new Azure Service Bus namespace & queue
+### Create the Authorization Rules for the Service Bus
+The follow commands will allow you to set authorization rule for Azure Service Bus that will be used by the components in this module.
 
-* Execute the following
-
-```cli
+```
 ## [queue_name as created in Module 1 - no need to modify] 
 queue_name=orders
 
@@ -73,27 +86,31 @@ kubectl create secret generic order-consumer-secret --from-literal=queue-connect
 
 ```
 
-### Deploying order processor app and Keda scaledobject
+### Deploying order processor app and KEDA scaledobject
+ The KEDA ScaledObject is a custom resource definition which is used to define how KEDA should scale your application and what the triggers are.
 
-* Execute the following
+ If you have  cloned the repository, you can use the following commands to deploy the app from your local file path.
 
-```cli
-cd [file path to module2 deployment files ]
+In the CLI, please set the directory by running the following with your file path:
+
+"cd [file path to root of cloned repository]"
+
+
+
+```
 kubectl apply -f tools/deploy/module2/deploy-app.yaml --namespace $demo_app_namespace
 
 kubectl apply -f tools/deploy/module2/deploy-autoscaling.yaml --namespace $demo_app_namespace
-
 ```
-* Alternative the following:
+If you have not cloned the repository, you can use the following commands to deploy the app by directly referencing the files in the repository.
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module2/deploy-app.yaml -n $demo_app_namespace
 
 kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module2/deploy-autoscaling.yaml -n $demo_app_namespace
-
 ```
 
-* Take a look at the HPA state and ScaledObject before proceeding to the next step.
+Take a look at the HPA state and ScaledObject before proceeding to the next step:
 ```
 kubectl get hpa -n $demo_app_namespace -o wide
 kubectl get so -n $demo_app_namespace -o wide
@@ -102,11 +119,9 @@ kubectl get deployments --namespace $demo_app_namespace -o wide
 ```
 ![hparunning](../../assets/images/module2/hpa-picture.png)
 
-### Looking into the details of Keda scaledobject
+You can look at the details of Keda ScaledObject deployment by running the following:
 
-* Execute the following
-
-```cli
+```
 
 kubectl describe scaledobject order-processor-scaler -n $demo_app_namespace
 
@@ -114,9 +129,7 @@ kubectl describe scaledobject order-processor-scaler -n $demo_app_namespace
 
 ### Deploying web order portal
 
-* Execute the following
 ```
-cd [file path to module2]
 kubectl apply -f tools/deploy/module2/deploy-web.yaml --namespace $demo_web_namespace
 
 kubectl get pod -n $demo_web_namespace -w 
@@ -137,9 +150,8 @@ kubectl get pod -n $demo_web_namespace -w
 
 #### Setting up and running service bus
 
-* Execute the following
 
-```cli
+```
 
 monitor_authorization_rule_name=alt-send
 az servicebus queue authorization-rule create -g $rg_name --namespace-name $servicebus_namespace --queue-name $queue_name --name $monitor_authorization_rule_name --rights Listen Send
@@ -148,10 +160,6 @@ asb_connectionstring4alt=$(az servicebus queue authorization-rule keys list -g $
 
 echo $asb_connectionstring4alt 
 ```
-#### Publishing messages to the queue
-
-https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/blob/main/connection-string-scenario.md#publishing-messages-to-the-queue
-
 #### Watching the pods scale
 
 * In the bash shell: run `watch kubectl get pod -n $demo_app_namespace -w`
@@ -163,11 +171,8 @@ https://github.com/kedacore/sample-dotnet-worker-servicebus-queue/blob/main/conn
 First, let's setup our variables by copying the following lines of code in a code editor of your choice and modifying the values according to your enviroment:
 
 ```
-#### First, set the values (SETTING ALL VARIABLES section)
-#### Then run the rest of the script (SCRIPT EXECUTION section)  
-
 ## Note: if your value set contains spaces please enclose the value in double quotes.
-## Also, please make sure to run the following commands from same command directory as the location of LvLUpAutoscalingLoadTest.jmx in order to let the "-F file=" parameter load the jmx content correctly (use cd to set your command directory) </br>
+## Also, please make sure to run the following commands from same command directory as the location of LvLUpAutoscalingLoadTest.jmx in order to let the "-F file=" parameter load the jmx content correctly (use cd to set your command directory)
 
 ### BEGIN - SETTING ALL VARIABLES
 
@@ -385,7 +390,7 @@ echo "****** End - Create Test API Response"
 ```
 
 The previous sequence of commands should result in a json string in the output. The json string will contain the properties of the Test instance just created. 
-The presence of the test properties in the output (no error or null value) would be confirmation that the test instance has been created successfully.
+The presence of the test properties in the output (you should see no errors nor *null* values) would confirm that the test instance has been created successfully.
 
 We are now going to upload the jmx/jmeter file to the test instance. The file contains the logic and parameters of the test.
 
