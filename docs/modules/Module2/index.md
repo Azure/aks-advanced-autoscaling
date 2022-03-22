@@ -1,7 +1,7 @@
 
 
 # Module 2: Application Deployment and Testing with Azure Load Testing
-In this module you will learn how KEDA allows for fine-grained autoscaling (including to/from zero) for event driven Kubernetes workloads. KEDA serves as a Kubernetes Metrics Server and allows users to define autoscaling rules using a dedicated Kubernetes custom resource definition.
+In this module you will learn how KEDA allows for fine-grained autoscaling (including to/from zero) for event driven Kubernetes workloads. KEDA serves as a Kubernetes Metrics Server and allows users to define autoscaling rules using a dedicated Kubernetes custom resource definition.  We will use Azure Load Test to generate a high load on the system so that pods will scale.
 
 
 
@@ -138,7 +138,8 @@ kubectl get pod -n $demo_web_namespace -w
 
 ```
 
-* Alternative the following:
+If you have not cloned the repository, you can use the following commands to deploy the app by directly referencing the files in the repository.
+
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module2/deploy-web.yaml -n $demo_web_namespace
