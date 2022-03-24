@@ -218,7 +218,7 @@ expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
 az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value "$secretvalue" --subscription $subscription --expires "$expiredate"
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
-$secret_uri
+
 ```
 
 Before proceeding with the next steps, we need to set your role assignment as "Load Test Owner" to the Azure Load Testing resource. The instructions on how you can execute this operation from the portal are documented here https://docs.microsoft.com/en-us/azure/load-testing/how-to-assign-roles#manage-resource-access. Anyhow, we will execute this operation via script to make it easier and faster. 
@@ -233,7 +233,7 @@ export MSYS_NO_PATHCONV=1
 objectId=$(az ad signed-in-user show --query "objectId" -o tsv)
 
 ## Let's set the scope that will see the role assigned
-altscope="/subscriptions/$ubscription/resourceGroups/$rg_name/providers/Microsoft.LoadTestService/loadtests/$alt"
+altscope="/subscriptions/$subscription/resourceGroups/$rg_name/providers/Microsoft.LoadTestService/loadtests/$alt"
 
 role="Load Test Owner"
 
