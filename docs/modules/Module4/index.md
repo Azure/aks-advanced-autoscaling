@@ -1,6 +1,6 @@
 # Module 4: Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
 In this module you will learn about using Open Service Mesh, Prometheus and Contour Ingress Controller. How to collect with Prometheus OSM traffic metrics within the mesh(http requests) and query/use these metrics to autoscale a particular app/pod using KEDA and a [prometheus](https://keda.sh/docs/2.6/scalers/prometheus/) Scale Object. You will also use Contour Ingress Controller as part of you mesh in order to have full observability of all type of traffic, East-West(app to app) and North-South(Ingress to web). At the end your web-order app will be able to autoscale based on http requests rate per minute. 
-Below is a diagram:
+* Below is a diagram:
 <img src="../../assets/images/module4/keda-OSM-Contour.png" width=600 /> 
 
 ### Intro to OpenServiceMesh
