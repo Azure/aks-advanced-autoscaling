@@ -50,4 +50,4 @@ Go back to the resource group, click on the Service Bus resource, and choose Que
 Finally, go back to the resource group, click on the Azure Container Registry resource, on the left hand navigation, choose Access control (IAM) - choose the Role assignments tab from the top context menu, and check that your akscluster-agentpool has been given AcrPull permissions to the container registry -
 ![container registry permissions view](../../assets/images/module1/acr_permissions.png)
 
-- Proceed to [Module2!](../Module2/index.md)
+Once finished, proceed to [Module2!](../Module2/index.md)
