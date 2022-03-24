@@ -15,7 +15,6 @@ First, let's setup our variables by copying the following lines of code in a cod
 
 ```
 ### BEGIN - SETTING VARIABLES
-First, let's setup our variables by copying the following lines of code in a code editor of your choice and modifying the values according to your enviroment:
 
 #### Note: if your value set contains spaces please enclose the value in double quotes.
 
@@ -27,11 +26,12 @@ servicebus_namespace=[servicebus namespace as created in Module 1]
 
 Deploying KEDA with Helm is very simple.
 
-Add Helm repo to the AKS cluster:
+Add Helm repo and connect to your AKS cluster:
 
 ```
 ## [aks as created in Module 1 - no need to change]
 akscluster_name=akscluster 
+az aks get-credentials --admin -g $rg_name --name $akscluster_name
 
 helm repo add kedacore https://kedacore.github.io/charts
 ```
@@ -39,9 +39,9 @@ Update Helm repo:
 ```
 helm repo update
 
-az aks get-credentials --admin -g $rg_name --name $akscluster_name
+
 ```
-Install KEDA Helm chart from the AKS repo:
+Install KEDA Helm chart to your AKS Cluster:
 ```
 kubectl create namespace keda
 helm install keda kedacore/keda --namespace keda
@@ -54,8 +54,8 @@ kubectl get pods -n keda
 ![kedarunning](../../assets/images/module2/pods-keda-picture.png)
 
 
-### Create the Authorization Rules for the Service Bus
-The follow commands will allow you to set authorization rule for Azure Service Bus that will be used by the components in this module.
+### Create the Authorization Rules for the Service Bus and Kubernetes secrets
+The follow commands will allow you to set authorization rules for Azure Service Bus that will be used by the components in this module. It will also create Kubernetes secrets that reference the Authorization rules.
 
 ```
 ## [queue_name as created in Module 1 - no need to modify] 
@@ -102,13 +102,7 @@ kubectl apply -f tools/deploy/module2/deploy-app.yaml --namespace $demo_app_name
 
 kubectl apply -f tools/deploy/module2/deploy-autoscaling.yaml --namespace $demo_app_namespace
 ```
-If you have not cloned the repository, you can use the following commands to deploy the app by directly referencing the files in the repository.
 
-```
-kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module2/deploy-app.yaml -n $demo_app_namespace
-
-kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module2/deploy-autoscaling.yaml -n $demo_app_namespace
-```
 
 Take a look at the HPA state and ScaledObject before proceeding to the next step:
 ```
@@ -127,29 +121,14 @@ kubectl describe scaledobject order-processor-scaler -n $demo_app_namespace
 
 ```
 
-### Deploying web order portal
+### Deploying web order portal application to order-portal namespace
 
 ```
 kubectl apply -f tools/deploy/module2/deploy-web.yaml --namespace $demo_web_namespace
 
-kubectl get pod -n $demo_web_namespace -w 
-
---Wait for the pod to be in Running state before proceeding to the next step.
-
 ```
 
-If you have not cloned the repository, you can use the following commands to deploy the app by directly referencing the files in the repository.
-
-
-```
-kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module2/deploy-web.yaml -n $demo_web_namespace
-kubectl get pod -n $demo_web_namespace -w 
-
---Wait for the pod to be in Running state before proceeding to the next step.
-
-```
-
-#### Setting up and running service bus
+#### Create Service Bus Authorization rule for Azure Load Testing
 
 
 ```
@@ -163,7 +142,8 @@ echo $asb_connectionstring4alt
 ```
 #### Watching the pods scale
 
-* In the bash shell: run `watch kubectl get pod -n $demo_app_namespace -w`
+* Open new bash shell: run the following `watch kubectl get pod -n order-processor`
+* We will monitor this terminal at the end of module2 to observe the scaling events.
 
 ### Create Azure Load Testing resources (Test, Secrets, Test settings)
 
@@ -196,7 +176,7 @@ Please copy, paste and run the following commands in a shell:
 
 ```
 # Unless you are already logged in, 'az login'  will open a browser window to let you authenticate. Once authenticated, the script will continue running 
-az login
+#az login
 az account set -s $subscription 
 asb_queue=orders 
 asb_queue_key_name=alt-send
@@ -238,7 +218,7 @@ expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
 az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value "$secretvalue" --subscription $subscription --expires "$expiredate"
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
-$secret_uri q
+$secret_uri
 ```
 
 Before proceeding with the next steps, we need to set your role assignment as "Load Test Owner" to the Azure Load Testing resource. The instructions on how you can execute this operation from the portal are documented here https://docs.microsoft.com/en-us/azure/load-testing/how-to-assign-roles#manage-resource-access. Anyhow, we will execute this operation via script to make it easier and faster. 
@@ -253,11 +233,11 @@ export MSYS_NO_PATHCONV=1
 objectId=$(az ad signed-in-user show --query "objectId" -o tsv)
 
 ## Let's set the scope that will see the role assigned
-altscope="/subscriptions/$ubscription/resourceGroups/$rg_name/providers/Microsoft.LoadTestService/loadtests/$alt/"
+altscope="/subscriptions/$ubscription/resourceGroups/$rg_name/providers/Microsoft.LoadTestService/loadtests/$alt"
 
 role="Load Test Owner"
 
-az role assignment create --assignee $objectId --role "$role" --scope $altid
+az role assignment create --assignee $objectId --role "$role" --scope $altscope
 
 
 ```
