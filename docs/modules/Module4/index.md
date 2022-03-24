@@ -4,7 +4,7 @@ In this module you will learn about using Open Service Mesh, Prometheus and Cont
 <img src="../../assets/images/module4/keda-OSM-Contour.png" width=600 /> 
 
 ### Intro to OpenServiceMesh
-* OpenServiceMesh is a simple, complete, and standalone service mesh that ships out-of-the-box with all necessary components to deploy a complete service mesh. 
+OpenServiceMesh is a simple, complete, and standalone service mesh that ships out-of-the-box with all necessary components to deploy a complete service mesh. 
 
 * Use Cases
  - Apply policies governing traffic access between peer applications
