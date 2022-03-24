@@ -1,4 +1,17 @@
 # Module 4: Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
+In this module you will learn about using Open Service Mesh, Prometheus and Contour Ingress Controller. How to collect with Prometheus OSM traffic metrics within the mesh(http requests) and query/use these metrics to autoscale a particular app/pod using KEDA and a [prometheus](https://keda.sh/docs/2.6/scalers/prometheus/) Scale Object. You will also use Contour Ingress Controller as part of you mesh in order to have full observability of all type of traffic, East-West(app to app) and North-South(Ingress to web). At the end your web-order app will be able to autoscale based on http requests rate per minute. 
+* Below is a diagram:
+<img src="../../assets/images/module4/keda-OSM-Contour.png" width=600 /> 
+
+### Intro to OpenServiceMesh
+OpenServiceMesh is a simple, complete, and standalone service mesh that ships out-of-the-box with all necessary components to deploy a complete service mesh. 
+
+Use Cases:
+ - Apply policies governing traffic access between peer applications
+ - Encrypt traffic between applications leveraging mTLS and short-lived certificates with a custom CA
+ - Collect traces and metrics to provide visibility into the health and operation of the services
+ - Implement traffic split between various versions of the services deployed as defined via SMI Spec
+ - Enforce "policy as code" with Open Policy Agent authentication plugin
 
 ### Install OpenServiceMesh
 
@@ -23,6 +36,10 @@ kubectl get services -n kube-system --selector app.kubernetes.io/name=openservic
 ```
 
 ![picture](../../assets/images/module4/picture01.png)
+
+### Bring your own Prometheus via helm and chart kube-prometheus-stack
+
+* In order to react as fast as possible to http metrics collected by the OSM we have decided to use Prometheus due to the low latency requirement and the Scalers provided in KEDA. However is important to understand that you have to ingrated a new or existing prometheus deployment in the case of using AKS and not use the OSM cli build-in deployment.  
 
 ### Installing Prometheus via helm chart kube-prometheus-stack
 
@@ -80,6 +97,13 @@ osm version --osm-namespace kube-system
 ```
 
 ![picture](../../assets/images/module4/picture03.png)
+
+### Intro to OSM observability and Metrics scraping
+Open Service Mesh (OSM) generates detailed metrics related to all traffic within the mesh and the OSM control plane. These metrics provide insights into the behavior of applications in the mesh and the mesh itself helping users to troubleshoot, maintain and analyze their applications. OSM collects metrics directly from the sidecar proxies (Envoy). With these metrics the user can get information about the overall volume of traffic, errors within traffic and the response time for requests. Additionally, OSM generates metrics for the control plane components. These metrics can be used to monitor the behavior and health of the service mesh. OSM uses Prometheus to gather and store consistent traffic metrics and statistics for all applications running in the mesh. Each application that is part of the mesh runs in a Pod which contains an Envoy sidecar that exposes metrics (proxy metrics) in the Prometheus format. Furthermore, every Pod that is a part of the mesh and in a namespace with metrics enabled has Prometheus annotations, which makes it possible for the Prometheus server to scrape the application dynamically. This mechanism automatically enables scraping of metrics whenever a pod is added to the mesh.
+
+For metrics to be scraped, the following prerequisites must be met:
+- The namespace must be a part of the mesh, ie. it must be labeled with the openservicemesh.io/monitored-by label with an appropriate mesh name. This can be done using the `osm namespace add command`
+- A running service able to scrape Prometheus endpoints. OSM provides configuration for an automatic bringup of Prometheus; alternatively users can bring their own Prometheus which is our current case.
 
 ### Adding namespace to mesh and enabling OSM metrics
 
@@ -187,29 +211,33 @@ kubectl apply -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscalin
 kubectl get pods -n order-portal -w
 ```
 
-### Now navigate to your Azure Load Testing and add RBAC role of "Load Test Owner" to yourself:
-
+### Now navigate to your Azure Load Testing instance and select the "Tests" blade 
 
 ![picture](../../assets/images/module4/picture09.png)
 
-### Create a new test with the file below:
-
-* Download this file and in line 40 replace the "your-ip-dns" with the value of your env. variable $myip_dns 
-[jmxloadtest](deploy/LvLUpAutoscalingLoadTest.jmx)
+### Select the existing Test and hit configure 
 
 ![picture](../../assets/images/module4/picture10.png)
 
-* Now navigate to your Azure Load Testing and hit Create under "Create a new test". Next name the load test and click on the tab "Test Tab" to upload your jmx file:
+### Remove the existing test plan jmx file and upload the file below:
+[jmxloadtest](../../../tools/deploy/module4/LvLUpAutoscalingLoadTest.jmx)
+
 ![picture](../../assets/images/module4/picture11.png)
 
-* Next hit the "Test criteria" and add the "Response time" and "Error" metrics like the photo below:
+### Click on the Parameters tab and update the value of the endpoint_uri
+
+* The value should be of your shell env. variable $myip_dns
+* Alternative you can run `kubectl get httpproxy -n order-portal` and copy the FQDN 
+
+![picture](../../assets/images/module4/parameters.png)
+
+* Optionally you could hit the "Test criteria" and add/modify the "Response time" and "Error" metrics like the photo below:
 ![picture](../../assets/images/module4/picture12.png)
 
 
-* Now hit "Review + create"
+* Now hit "Apply and them re-run the test"
 
 ### Watch the metrics and the terminal with the pods
 
 ![picture](../../assets/images/module4/picture13.png)
 ![picture](../../assets/images/module4/picture14.png)
-
