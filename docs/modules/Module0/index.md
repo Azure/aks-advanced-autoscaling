@@ -2,7 +2,7 @@
 
 ## Running the Labs in Github Codespace
 
-- Go to the GitHub repository for this Lab: https://github.com/Azure/aks-advanced-autoscaling
+- Go to the GitHub repository for this Lab: [aks-advanced-autoscaling](https://github.com/Azure/aks-advanced-autoscaling)
 - Click the `Code` button on this repo
   - Select `Codespaces` tab
 
