@@ -43,6 +43,8 @@ Visit the new resource group that was created in the deployment and ensure that 
 ![azure resources screenshot](../../assets/images/module1/lvlupresources.png)
 
 The following table lists the resources that should be created:<br/>
+
+
 Resource Type | Resource Name 
 --------------|--------------
 Kubernetes Service | akscluster 
