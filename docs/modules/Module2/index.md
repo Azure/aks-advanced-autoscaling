@@ -385,7 +385,7 @@ sleep 5
 fileid=$(uuid)
 hdr_authorization="Authorization: Bearer $accessToken"
 validateUploadFileTestURI="https://$dataPlaneURI/file/$fileid:validate?"$alt_apiversion
-validateUploadFileTestResponse=$(curl $validateUploadFileTestURI -w "%{http_code}" -H "$hdr_authorization" -F "file=@LvLUpAutoscalingLoadTest.jmx")
+validateUploadFileTestResponse=$(curl $validateUploadFileTestURI -w "%{http_code}" -H "$hdr_authorization" -F "file=@tools/deploy/module2/LvLUpAutoscalingLoadTest.jmx")
 
 ## Now we will upload the jmx to the test with the next sequence of commands
 uploadFileTestURI="https://$dataPlaneURI/loadtests/$testId/files/$fileid?"$alt_apiversion
