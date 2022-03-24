@@ -27,16 +27,17 @@ Open the button below in a new window and provide the parameters in the portal -
 Visit the new resource group that was created in the deployment and ensure that the following resources are deployed - 
 ![azure resources screenshot](../../assets/images/module1/lvlupresources.png)
 
-The following table lists the resources that should be created:<br/>
+The following table lists the resources that should be created:
+
 | Resource Type | Resource Name |
-| ------------- | ------------- |
-| Kubernetes Service | akscluster |
-| Nework Security Group | \<alias>AKSNSG |
-| Container Registry | \<alias>lvlupacr |
-| Key Vault | \<alias>lvlupkeyvault |
-| Azure Load Testing | \<alias>lvluploadtesting |
-| Virtual Network | \<alias>lvlupvnet |
-| Service Bus Namespace | \<alias>servicebus |
+|------------------------|-------------------------|
+| Kubernetes Service | <alias>AKSNSG |
+| Network Security Group | <alias>AKSNSG |
+| Container Registry | <alias>lvlupacr |
+| Key Vault | <alias>lvlupkeyvault |
+| Azure Load Testing | <alias>lvluploadtesting |
+| Virtual Network | <alias>lvlupvnet |
+| Service Bus Namespace | <alias>servicebus |
 
 Click on the link for the virtual network, and then click on subnets from the left hand navigation.  Ensure there are 2 subnets listed, one called aksSubnet and a second one called aciSubnet Look for \<alias>AKSNSG resource to be associated to the aksSubnet. note: the aciSubnet will likely also have an associated NSG that is created by policy if deploying to a corporate subscription - 
 ![subnets view of vnet](../../assets/images/module1/nsgassociation.png)
