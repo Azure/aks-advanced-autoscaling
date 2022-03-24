@@ -29,7 +29,7 @@ Visit the new resource group that was created in the deployment and ensure that 
 
 The following table lists the resources that should be created:<br/>
 Resource Type | Resource Name 
--------------- | --------------
+------------- | ------------- 
 Kubernetes Service | akscluster 
 Nework Security Group | \<alias>AKSNSG
 Container Registry | \<alias>lvlupacr
