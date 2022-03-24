@@ -433,7 +433,7 @@ Click on the Test instance shown on the list ("LvlUpNewTest") to configure or re
 ![Azure Load Testing - Configure/Review instance](../../assets/images/module2/Configure%20or%20Review%20Test%20instance.png)
 
 At this point, you should be ready to run the test and watch the pods scaling as previously explained: 
-1. From bash/sh shell please execute **"watch kubectl get pod -n $demo_app_namespace -w"**.
+1. From bash/sh shell please execute **"watch kubectl get pod -n order-processor"**.
 2. From Azure Portal (Azure Load Testing->Tests->Your Test), please run the test using one of the "Run" buttons as shown in the image below: 
 
 ![Azure Load Testing - Configure/Review instance](../../assets/images/module2/ALT%20-%20Run%20Test.png)
