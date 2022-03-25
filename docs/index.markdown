@@ -16,9 +16,9 @@ Slides
 
 - [Slides](assets/slides/ppt.pttx)
 
-Diagrams
+Diagram
 
-- [Architecture - placeholder](nowhere/)
+- ![Architecture - placeholder](assets/images/levelup-architecture.png)
 
 
 
