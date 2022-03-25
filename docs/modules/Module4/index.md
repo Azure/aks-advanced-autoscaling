@@ -49,9 +49,7 @@ kubectl get services -n kube-system --selector app.kubernetes.io/name=openservic
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 helm install prometheus \
-
 prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module4/byo_values.yaml \
-
 --namespace monitoring \
 --create-namespace
 
@@ -72,9 +70,7 @@ kubectl --namespace monitoring get pods -l "release=prometheus"
 
 ```
 helm upgrade prometheus \
-
 prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module4/byo_values.yaml \
-
 --namespace monitoring \
 --set kubeEtcd.enabled=false \
 --set kubeControllerManager.enabled=false \
@@ -124,7 +120,7 @@ kubectl get pods -n kube-system -l app=osm-controller
 
 ### Portforward Prometheus in another new terminal and open http://localhost:9090 :
 ```
-nohup kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090 &
+kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090 &
 ```
 
 ### Query to run in Prometheus to pull http metrics:
@@ -220,7 +216,7 @@ kubectl get pods -n order-portal -w
 ![picture](../../assets/images/module4/picture10.png)
 
 ### Remove the existing test plan jmx file and upload the file below:
-[jmxloadtest](../../../tools/deploy/module4/LvLUpAutoscalingLoadTest.jmx)
+[jmxloadtest](https://github.com/Azure/aks-advanced-autoscaling/blob/main/tools/deploy/module4/LvLUpAutoscalingLoadTest.jmx)
 
 ![picture](../../assets/images/module4/picture11.png)
 
