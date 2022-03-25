@@ -18,7 +18,7 @@ Slides
 
 Diagrams
 
-- [Architecture - placeholder](nowhere/)
+- [Architecture - placeholder](assets/images/levelup-architecture.png)
 
 
 
