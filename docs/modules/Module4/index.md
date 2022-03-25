@@ -1,6 +1,6 @@
 # Module 4: Configure Keda Using Http Metrics & Open Service Mesh and Testing with Azure Load Testing
-In this module you will learn about using Open Service Mesh, Prometheus and Contour Ingress Controller. How to collect with Prometheus OSM traffic metrics within the mesh(http requests) and query/use these metrics to autoscale a particular app/pod using KEDA and a [prometheus](https://keda.sh/docs/2.6/scalers/prometheus/) Scale Object. You will also use Contour Ingress Controller as part of you mesh in order to have full observability of all type of traffic, East-West(app to app) and North-South(Ingress to web). At the end your web-order app will be able to autoscale based on http requests rate per minute. 
-* Below is a diagram:
+In this module you will learn about scaling a workload by HTTP requests using Open Service Mesh, Prometheus and Contour Ingress Controller. This module will teach you how to collect  Prometheus OSM traffic metrics within the mesh(http requests) and query/use these metrics to autoscale a particular app/pod using KEDA and a [prometheus trigger](https://keda.sh/docs/2.6/scalers/prometheus/) Scale Object. You will also use Contour Ingress Controller as part of you mesh in order to have full observability of all type of traffic, East-West(app to app) and North-South(Ingress to web). At the end your web-order app will be able to autoscale based on http requests rate per second. 
+* Below is a diagram of the components for this module:
 <img src="../../assets/images/module4/keda-OSM-Contour.png" width=600 /> 
 
 ### Intro to OpenServiceMesh
@@ -17,16 +17,16 @@ Use Cases:
 
 * Execute the following
 ```
-az aks enable-addons --addons open-service-mesh -g $rg_name -n $akscluster_name
+az aks enable-addons --addons open-service-mesh -g $rg_name -n akscluster
 ```
 * Verify it was enabled
 ```
-az aks show -g $rg_name -n $akscluster_name --query 'addonProfiles.openServiceMesh.enabled'
+az aks show -g $rg_name -n akscluster --query 'addonProfiles.openServiceMesh.enabled'
 ```
 
 ### Verify the status of OSM in kube-system namespace
 
-* Execute the following
+* Execute the following to view the various Open Service Mesh components.
 
 ```
 kubectl get deployments -n kube-system --selector app.kubernetes.io/name=openservicemesh.io
@@ -39,7 +39,7 @@ kubectl get services -n kube-system --selector app.kubernetes.io/name=openservic
 
 ### Bring your own Prometheus via helm and chart kube-prometheus-stack
 
-* In order to react as fast as possible to http metrics collected by the OSM we have decided to use Prometheus due to the low latency requirement and the Scalers provided in KEDA. However is important to understand that you have to ingrated a new or existing prometheus deployment in the case of using AKS and not use the OSM cli build-in deployment.  
+* In order to react as fast as possible to http metrics collected by the OSM we have decided to use Prometheus due to the low latency requirement and the Scalers provided in KEDA. 
 
 ### Installing Prometheus via helm chart kube-prometheus-stack
 
@@ -49,12 +49,9 @@ kubectl get services -n kube-system --selector app.kubernetes.io/name=openservic
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 helm install prometheus \
-
 prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module4/byo_values.yaml \
-
 --namespace monitoring \
 --create-namespace
-
 ```
 * Check that everything is running
 
@@ -72,9 +69,7 @@ kubectl --namespace monitoring get pods -l "release=prometheus"
 
 ```
 helm upgrade prometheus \
-
 prometheus-community/kube-prometheus-stack -f https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module4/byo_values.yaml \
-
 --namespace monitoring \
 --set kubeEtcd.enabled=false \
 --set kubeControllerManager.enabled=false \
