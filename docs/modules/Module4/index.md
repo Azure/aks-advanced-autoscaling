@@ -118,11 +118,11 @@ kubectl get pods -n kube-system -l app=osm-controller
 
 ![picture](../../assets/images/module4/picture04.png)
 
-### Portforward Prometheus in another new terminal and open http://localhost:9090 :
+### Portforward Prometheus in another new terminal and go to http://localhost:9090 otherwise check codespace "ports" tab:
 ```
 kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090 &
 ```
-
+![picture](../../assets/images/module4/ports-tabs.png)
 ### Query to run in Prometheus to pull http metrics:
 
 ![picture](../../assets/images/module4/picture05.png)
@@ -215,10 +215,11 @@ kubectl get pods -n order-portal -w
 
 ![picture](../../assets/images/module4/picture10.png)
 
-### Remove the existing test plan jmx file and upload the file below:
-[jmxloadtest](https://github.com/Azure/aks-advanced-autoscaling/blob/main/tools/deploy/module4/LvLUpAutoscalingLoadTest.jmx)
-
+### Remove the existing test plan jmx file:
 ![picture](../../assets/images/module4/picture11.png)
+
+### Download this file [jmxloadtest](https://raw.githubusercontent.com/Azure/aks-advanced-autoscaling/main/tools/deploy/module4/LvLUpAutoscalingLoadTest.jmx) by right click and select "save link as". Them upload the new test plan file LvLUpAutoscalingLoadTest.jmx:
+![picture](../../assets/images/module4/savelinkas.png)
 
 ### Click on the Parameters tab and update the value of the endpoint_uri
 
