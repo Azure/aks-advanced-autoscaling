@@ -1,6 +1,6 @@
 ---
 title: Deploy, Configure and test ACI with ALT
-parent: Module 3 - Autoscaling with ACI
+parent: Module 3 - Rapid Burst Scaling with ACI and Azure Load Testing
 has_children: false
 nav_order: 3
 ---
