@@ -6,6 +6,6 @@ has_children: true
 ---
 
 
-## Configure ACI
+## Module 3 - Rapid Burst Scaling with ACI and Azure Load Testing
 
-Configure ACI
+Module 3 - Rapid Burst Scaling with ACI and Azure Load Testing
