@@ -1,4 +1,4 @@
-# Module 1 - Deploying AKS and Azure Services
+# Module 1 - Deploy Infrastructure
 
 ## Deploy Infrastructure
 
