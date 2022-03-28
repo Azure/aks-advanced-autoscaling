@@ -148,8 +148,6 @@ echo $asb_connectionstring4alt
 
 ### Create Azure Load Testing resources (Test, Secrets, Test settings)
 
-> Note: the entire sequence of commands is also included in ["Option 1 - ALT Creation.sh script"](https://github.com/Azure/aks-advanced-autoscaling/tree/main/tools/deploy/module2/Option%201%20-%20ALT%20Creation.sh)
-
 First, let's setup our variables by copying the following lines of code in a code editor of your choice and modifying the values according to your enviroment:
 
 ```
