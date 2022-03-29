@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #### First, set the values of the variables (SETTING ALL VARIABLES section)
 #### Then run the rest of the script (SCRIPT EXECUTION section)  
 
