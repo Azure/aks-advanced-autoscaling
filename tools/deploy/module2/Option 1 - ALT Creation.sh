@@ -22,12 +22,7 @@ asb_endpoint_uri=[your asb uri]
 
 ## if gdate is present use gdate, otherwise use date
 ## For more details on formatting dates on Liunx and Unix, see: https://www.shell-tips.com/linux/how-to-format-date-and-time-in-linux-macos-and-bash/
-gdate_present=$(command -v gdate)
-if [ -z "$gdate_present" ]; then
-  date="date"
-else
-  date="gdate"
-fi
+date() { if type -t gdate &>/dev/null; then gdate "$@"; else date "$@"; fi }
 
 ### BEGIN - SCRIPT EXECUTION - copy, paste, run
 
