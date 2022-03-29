@@ -23,7 +23,6 @@ asb_endpoint_uri=[your asb uri]
 ### BEGIN - SCRIPT EXECUTION - copy, paste, run
 
 # Unless you are already logged in, 'az login'  will open a browser window to let you authenticate. Once authenticated, the script will continue running 
-cd "$directory_of_LvLUpAutoscalingLoadTestjmx"
 az login
 az account set -s $subscription 
 asb_queue=orders 
@@ -64,7 +63,6 @@ expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
 az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value "$secretvalue" --subscription $subscription --expires "$expiredate"
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
-$secret_uri
 
 ## Default value already set for the load test instance that we are going to create. Feel free to keep it as-is or modify
 testname="LvlUpNewTest"
