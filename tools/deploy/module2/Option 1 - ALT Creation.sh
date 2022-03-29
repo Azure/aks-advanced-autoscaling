@@ -20,13 +20,22 @@ asb_endpoint_uri=[your asb uri]
 
 ### *** END - SETTING ALL VARIABLES
 
+## if gdate is present use gdate, otherwise use date
+## For more details on formatting dates on Liunx and Unix, see: https://www.shell-tips.com/linux/how-to-format-date-and-time-in-linux-macos-and-bash/
+gdate_present=$(command -v gdate)
+if [ -z "$gdate_present" ]; then
+  date="date"
+else
+  date="gdate"
+fi
+
 ### BEGIN - SCRIPT EXECUTION - copy, paste, run
 
 # Unless you are already logged in, 'az login'  will open a browser window to let you authenticate. Once authenticated, the script will continue running 
 az login
 az account set -s $subscription 
 asb_queue=orders 
-asb_queue_key_name=keda-monitor-send
+asb_queue_key_name=alt-send
 
 asb_uri="https://"$servicebus_namespace".servicebus.windows.net/"$asb_queue"/messages"
 asb_queue_primary_key=$(az servicebus queue authorization-rule keys list -g $rg_name --namespace-name $servicebus_namespace --queue-name $asb_queue --name $asb_queue_key_name --query primaryKey -o tsv)
@@ -194,7 +203,7 @@ sleep 5
 fileid=$(uuid)
 hdr_authorization="Authorization: Bearer $accessToken"
 validateUploadFileTestURI="https://$dataPlaneURI/file/$fileid:validate?"$alt_apiversion
-validateUploadFileTestResponse=$(curl $validateUploadFileTestURI -w "%{http_code}" -H "$hdr_authorization" -F "file=@LvLUpAutoscalingLoadTest.jmx")
+validateUploadFileTestResponse=$(curl $validateUploadFileTestURI -w "%{http_code}" -H "$hdr_authorization" -F "file=@${directory_of_LvLUpAutoscalingLoadTestjmx}")
 
 ## Now we will upload the jmx to the test with the next sequence of commands
 uploadFileTestURI="https://$dataPlaneURI/loadtests/$testId/files/$fileid?"$alt_apiversion
@@ -202,7 +211,7 @@ uploadFileTestURI="https://$dataPlaneURI/loadtests/$testId/files/$fileid?"$alt_a
 ## Please make sure to run the following from same command directory as the location of LvLUpAutoscalingLoadTest.jmx 
 ## in order to let the -F file= parameter load the jmx content correctly
 
-uploadFileTestURIResponse=$(curl $uploadFileTestURI -X PUT -w "%{http_code}" -H "$hdr_authorization" -F "file=@LvLUpAutoscalingLoadTest.jmx")
+uploadFileTestURIResponse=$(curl $uploadFileTestURI -X PUT -w "%{http_code}" -H "$hdr_authorization" -F "file=@${directory_of_LvLUpAutoscalingLoadTestjmx}")
 
 ### END - SCRIPT EXECUTION
 
