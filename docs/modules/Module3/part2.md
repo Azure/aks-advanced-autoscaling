@@ -29,8 +29,8 @@ az aks enable-addons \
 
 ## Deploying updated demo app
 
-* In Module 2 **order processor app** was deployed on a VM nodepool
-* In this module, [deploy-app.yaml](../../../tools/deploy/module3/deploy-app.yaml) file will be updated, so it gets deployed on virtual nodes, as shown below
+* In Module 2 [order processor app](../../../tools/deploy/module2/deploy-app.yaml) was deployed on a VM nodepool
+* In this module, a modified version of the [file][deploy-app.yaml](../../../tools/deploy/module3/deploy-app.yaml) will be applied, so that it gets deployed on virtual nodes, as shown below
 
 ```yaml
       nodeSelector:
