@@ -1,0 +1,79 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "defaultValue": "eastus2",
+            "type": "String"
+        },
+        "environment_name": {
+            "defaultValue": "order",
+            "type": "String"
+        },
+        "queue_connection_string": {
+            "defaultValue": "",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+    {
+        "name": "order-processor-app",
+        "type": "Microsoft.App/containerApps",
+        "apiVersion": "2022-01-01-preview",
+        "kind": "containerapp",
+        "location": "[parameters('location')]",
+        "properties": {
+            "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('environment_name'))]",
+            "configuration": {
+                "activeRevisionsMode": "single",
+                "secrets": [
+                {
+                    "name": "queueconnection",
+                    "value": "[parameters('queue_connection_string')]"
+                }]
+            },
+            "template": {
+                "containers": [
+                    {
+                        "image": "ghcr.io/kedacore/sample-dotnet-worker-servicebus-queue:latest",
+                        "name": "order-processor",
+                        "env": [
+                            {
+                                "name": "KEDA_SERVICEBUS_AUTH_MODE",
+                                "value": "ConnectionString"
+                            },
+                            {
+                                "name": "KEDA_SERVICEBUS_QUEUE_NAME",
+                                "value": "orders"
+                            },
+                            {
+                                "name": "KEDA_SERVICEBUS_QUEUE_CONNECTIONSTRING",
+                                "secretref": "queueconnection"
+                            }
+                        ]
+                    }
+                ],
+                "scale": {
+                    "minReplicas": 0,
+                    "maxReplicas": 10,
+                    "rules": [
+                        {
+                            "name": "myqueuerule",
+                            "azureQueue": {
+                                "queueName": "order",
+                                "queueLength": 50,
+                                "auth": [
+                                    {
+                                        "secretRef": "queueconnection",
+                                        "triggerParameter": "connection"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }]
+}
