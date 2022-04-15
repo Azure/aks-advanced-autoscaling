@@ -55,14 +55,18 @@
                     }
                 ],
                 "scale": {
-                    "minReplicas": 0,
+                    "minReplicas": 1,
                     "maxReplicas": 10,
                     "rules": [
                         {
-                            "name": "myqueuerule",
-                            "azureQueue": {
-                                "queueName": "order",
-                                "queueLength": 50,
+                            "name": "queue-based-autoscaling",                           
+                            "custom": {
+                                "type": "azureServicebus",
+                                "metadata": {
+                                        "queueName": "orders",
+                                        "namespace": "adv-autoscaling",
+                                        "messageCount": "2"
+                                    },
                                 "auth": [
                                     {
                                         "secretRef": "queueconnection",
