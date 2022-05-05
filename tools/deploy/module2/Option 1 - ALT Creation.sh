@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #### First, set the values of the variables (SETTING ALL VARIABLES section)
 #### Then run the rest of the script (SCRIPT EXECUTION section)  
 
@@ -18,10 +20,13 @@ asb_endpoint_uri=[your asb uri]
 
 ### *** END - SETTING ALL VARIABLES
 
+## if gdate is present use gdate, otherwise use date
+## For more details on formatting dates on Liunx and Unix, see: https://www.shell-tips.com/linux/how-to-format-date-and-time-in-linux-macos-and-bash/
+date() { if type -t gdate &>/dev/null; then gdate "$@"; else date "$@"; fi }
+
 ### BEGIN - SCRIPT EXECUTION - copy, paste, run
 
 # Unless you are already logged in, 'az login'  will open a browser window to let you authenticate. Once authenticated, the script will continue running 
-cd "$directory_of_LvLUpAutoscalingLoadTestjmx"
 az login
 az account set -s $subscription 
 asb_queue=orders 
@@ -62,7 +67,6 @@ expiredate=$(date +%Y-%m-%d'T'%H:%M:%S'Z' -d "$(date) + 8 hours")
 az keyvault secret set --name $secret_name --vault-name $azure_key_vault --value "$secretvalue" --subscription $subscription --expires "$expiredate"
 
 secret_uri=$(az keyvault secret show --name $secret_name --vault-name $azure_key_vault --query id -o tsv)
-$secret_uri
 
 ## Default value already set for the load test instance that we are going to create. Feel free to keep it as-is or modify
 testname="LvlUpNewTest"
@@ -194,7 +198,7 @@ sleep 5
 fileid=$(uuid)
 hdr_authorization="Authorization: Bearer $accessToken"
 validateUploadFileTestURI="https://$dataPlaneURI/file/$fileid:validate?"$alt_apiversion
-validateUploadFileTestResponse=$(curl $validateUploadFileTestURI -w "%{http_code}" -H "$hdr_authorization" -F "file=@LvLUpAutoscalingLoadTest.jmx")
+validateUploadFileTestResponse=$(curl $validateUploadFileTestURI -w "%{http_code}" -H "$hdr_authorization" -F "file=@${directory_of_LvLUpAutoscalingLoadTestjmx}")
 
 ## Now we will upload the jmx to the test with the next sequence of commands
 uploadFileTestURI="https://$dataPlaneURI/loadtests/$testId/files/$fileid?"$alt_apiversion
@@ -202,7 +206,7 @@ uploadFileTestURI="https://$dataPlaneURI/loadtests/$testId/files/$fileid?"$alt_a
 ## Please make sure to run the following from same command directory as the location of LvLUpAutoscalingLoadTest.jmx 
 ## in order to let the -F file= parameter load the jmx content correctly
 
-uploadFileTestURIResponse=$(curl $uploadFileTestURI -X PUT -w "%{http_code}" -H "$hdr_authorization" -F "file=@LvLUpAutoscalingLoadTest.jmx")
+uploadFileTestURIResponse=$(curl $uploadFileTestURI -X PUT -w "%{http_code}" -H "$hdr_authorization" -F "file=@${directory_of_LvLUpAutoscalingLoadTestjmx}")
 
 ### END - SCRIPT EXECUTION
 
